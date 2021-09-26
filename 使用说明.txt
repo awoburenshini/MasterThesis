@@ -1,0 +1,15 @@
+1. 本模板适用于浙江大学数学科学学院硕士/博士论文。
+
+2. 本模板基于xelatex+Ctex，在Windows下的texlive 2017、CTeX套装以及OS X下测试通过。这里建议使用texlive2017，非常不建议使用ctex，可能会出现字体无法加粗等各种无法预料的问题，欢迎大家调试出兼容CTeX套装的版本。
+这里给出编者常用的编译器配置，详见：https://www.latexstudio.net/archives/12260.html
+
+3. 关于zjuthesis.cls：这是浙江大学数学科学学院博士毕业论文LaTeX模版格式，里面有一些信息，也欢迎在此基础上自行尝试修改。该文件里定义了一些定理环境：引理（\begin{lem} \end{lem}）；定义（\begin{defn} \end{defn}）；定理（\begin{thm} \end{thm})；推论（\begin{cor} \end{cor}）；注（\begin{rem} \end{rem}）；证明（\begin{pro} \end{pro}）；命题（\begin{prop} \end{prop}）。
+
+4. 关于math_thesis.tex：主文档，需要设置一些论文封面、题名页的信息，以及input一些章节的具体内容。值得说明的是，如果目录、图目录、表目录有改动，第一次编译会生成toc、lof、lot文件，第二次编译才会生成的pdf文件中反映出改变。
+
+5. 关于文件夹chapters：从封面、摘要到正文内容、参考文献的主要内容，分开保存也是便于修改。
+
+6. 关于文件夹images：主要是保存一些图片，可以是jpg、eps、pdf 格式等。
+
+7. 有任何问题欢迎讨论。
+

@@ -1,0 +1,4 @@
+PWD C:/Users/dw/Desktop/Maththesis/chapters
+INPUT d:/ProgramFiles/texlive/2018/texmf-var/web2c/xetex/xelatex.fmt
+INPUT absc.tex
+OUTPUT absc.log

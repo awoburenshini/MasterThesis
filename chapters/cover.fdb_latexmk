@@ -1,0 +1,12 @@
+# Fdb version 3
+["xdvipdfmx"] 0 "cover.xdv" "cover.pdf" "cover" 0
+  "cover.xdv" 0 -1 0 "xelatex"
+  (generated)
+  "cover.pdf"
+["xelatex"] 1564032000 "cover.tex" "cover.xdv" "cover" 1564032000
+  "cover.aux" 1564031329 9 a94a2480d3289e625eea47cd1b285758 ""
+  "cover.tex" 1564031999 2648 93bb739fde3fb0b9d8bba936fa594424 ""
+  "d:/ProgramFiles/texlive/2018/texmf-var/web2c/xetex/xelatex.fmt" 1548034456 3731696 850113780613658f1420facd94ec41a3 ""
+  (generated)
+  "cover.xdv"
+  "cover.log"

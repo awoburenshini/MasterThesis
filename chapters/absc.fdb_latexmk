@@ -1,0 +1,12 @@
+# Fdb version 3
+["xdvipdfmx"] 0 "absc.xdv" "absc.pdf" "absc" 0
+  "absc.xdv" 0 -1 0 "xelatex"
+  (generated)
+  "absc.pdf"
+["xelatex"] 1564033526 "absc.tex" "absc.xdv" "absc" 1564033526
+  "absc.aux" 1564033526 9 a94a2480d3289e625eea47cd1b285758 ""
+  "absc.tex" 1564033525 664 535ffd412afe0857618d04a07826ba64 ""
+  "d:/ProgramFiles/texlive/2018/texmf-var/web2c/xetex/xelatex.fmt" 1548034456 3731696 850113780613658f1420facd94ec41a3 ""
+  (generated)
+  "absc.xdv"
+  "absc.log"

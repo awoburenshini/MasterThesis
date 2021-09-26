@@ -1,0 +1,4 @@
+PWD C:/Users/dw/Desktop/Maththesis_Master/chapters
+INPUT d:/ProgramFiles/texlive/2018/texmf-var/web2c/xetex/xelatex.fmt
+INPUT cover.tex
+OUTPUT cover.log
