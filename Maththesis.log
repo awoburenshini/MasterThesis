@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/W32TeX) (preloaded format=xelatex 2021.9.26)  26 SEP 2021 17:14
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/W32TeX) (preloaded format=xelatex 2021.9.26)  26 SEP 2021 17:30
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -608,7 +608,7 @@ Package fontspec Info: Font family 'Fangsong(0)' created for font 'Fangsong'
 \@nomenclaturefile=\write3
 \openout3 = `Maththesis.nlo'.
 
-Package nomencl Info: Writing nomenclature file Maththesis.nlo on input line 190.
+Package nomencl Info: Writing nomenclature file Maththesis.nlo on input line 191.
 \c@lem=\count323
 \c@defn=\count324
 \c@thm=\count325
@@ -616,7 +616,7 @@ Package nomencl Info: Writing nomenclature file Maththesis.nlo on input line 190
 \c@rem=\count327
 \c@pro=\count328
 \c@prop=\count329
-LaTeX Info: Redefining \gbt7714 on input line 278.
+LaTeX Info: Redefining \gbt7714 on input line 279.
 ) (d:/texlive/2021/texmf-dist/tex/latex/tools/enumerate.sty
 Package: enumerate 2015/07/23 v3.00 enumerate extensions (DPC)
 \@enLab=\toks37

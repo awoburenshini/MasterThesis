@@ -179,7 +179,8 @@
   \fancyhead[R]{\xiaowu\songti\leftmark}
   \fancyfoot[C]{\xiaowu\thepage}
 \fi
-\renewcommand{\contentsname}{\centerline{目 \quad 次}}
+% \renewcommand{\contentsname}{\centerline{目 \quad 次}}
+\renewcommand{\contentsname}{\centerline{目 \quad 录}}
 \renewcommand{\listfigurename}{\centerline{图~目~录}}
 \renewcommand{\listtablename}{\centerline{表~目~录}}
 \setcounter{tocdepth}{2}  % 设置目录的深度到 subsection
