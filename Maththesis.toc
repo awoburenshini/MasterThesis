@@ -5,21 +5,26 @@
 \contentsline {chapter}{表目录}{V}{}%
 \chaptermark {目录}
 \contentsline {chapter}{\makebox [\linewidth ]{目录\hfill }\vspace {-2em}}{}
-\contentsline {chapter}{\numberline {1}引言}{1}{}%
-\contentsline {section}{\numberline {1.1}选题背景与意义}{1}{}%
-\contentsline {section}{\numberline {1.2}文献综述}{1}{}%
-\contentsline {section}{\numberline {1.3}文章结构}{1}{}%
+\contentsline {chapter}{\numberline {1}绪论}{1}{}%
+\contentsline {section}{\numberline {1.1}问题背景}{1}{}%
+\contentsline {section}{\numberline {1.2}相关工作}{1}{}%
+\contentsline {section}{\numberline {1.3}研究内容}{1}{}%
+\contentsline {section}{\numberline {1.4}本章小结}{1}{}%
 \contentsline {chapter}{\numberline {2}连续介质力学}{2}{}%
 \contentsline {section}{\numberline {2.1}欧拉视角下的动力学}{2}{}%
 \contentsline {section}{\numberline {2.2}拉格朗日视角下的动力学}{2}{}%
 \contentsline {section}{\numberline {2.3}弱可压缩流体}{2}{}%
 \contentsline {section}{\numberline {2.4}表面张力}{2}{}%
 \contentsline {chapter}{\numberline {3}表面重建}{3}{}%
-\contentsline {section}{\numberline {3.1}LSIPIA}{3}{}%
-\contentsline {section}{\numberline {3.2}收敛性证明}{3}{}%
+\contentsline {section}{\numberline {3.1}Marching cubes}{3}{}%
+\contentsline {section}{\numberline {3.2}LSIPIA}{3}{}%
+\contentsline {subsection}{\numberline {3.2.1}收敛性证明}{3}{}%
 \contentsline {chapter}{\numberline {4}数值方法}{4}{}%
 \contentsline {section}{\numberline {4.1}离散控制方程}{4}{}%
 \contentsline {section}{\numberline {4.2}计算流水线}{4}{}%
-\contentsline {chapter}{参考文献}{5}{}%
-\contentsline {chapter}{作者简历}{6}{}%
+\contentsline {chapter}{\numberline {5}总结与展望}{5}{}%
+\contentsline {section}{\numberline {5.1}本文工作总结}{5}{}%
+\contentsline {section}{\numberline {5.2}未来工作展望}{5}{}%
+\contentsline {chapter}{参考文献}{6}{}%
+\contentsline {chapter}{作者简历}{7}{}%
 \contentsfinish 

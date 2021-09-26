@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/W32TeX) (preloaded format=xelatex 2021.9.26)  26 SEP 2021 16:02
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/W32TeX) (preloaded format=xelatex 2021.9.26)  26 SEP 2021 17:14
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1033,7 +1033,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 ]
 Chapter 4.
-)
+) (./chapters/chapter5.tex
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 12.64723pt, for example:
@@ -1043,7 +1043,9 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 [4
 
-] (./chapters/bib.tex) (./chapters/resume.tex
+]
+Chapter 5.
+)
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 12.64723pt, for example:
@@ -1052,6 +1054,16 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-0.64723pt}.
 
 [5
+
+] (./chapters/bib.tex) (./chapters/resume.tex
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 12.64723pt, for example:
+(fancyhdr)                \setlength{\headheight}{12.64723pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+(fancyhdr)                \addtolength{\topmargin}{-0.64723pt}.
+
+[6
 
 
 ])
@@ -1062,16 +1074,16 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller to compensate:
 (fancyhdr)                \addtolength{\topmargin}{-0.64723pt}.
 
-[6
+[7
 
 ] (./Maththesis.aux) ) 
 Here is how much of TeX's memory you used:
- 15211 strings out of 476919
- 329283 string characters out of 5825424
- 703797 words of memory out of 5000000
- 34743 multiletter control sequences out of 15000+600000
+ 15209 strings out of 476919
+ 328763 string characters out of 5825424
+ 705797 words of memory out of 5000000
+ 34738 multiletter control sequences out of 15000+600000
  419488 words of font info for 167 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  128i,11n,130p,417b,448s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on Maththesis.pdf (16 pages).
+Output written on Maththesis.pdf (17 pages).
