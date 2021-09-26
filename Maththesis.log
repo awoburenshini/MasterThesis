@@ -1,10 +1,10 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/W32TeX) (preloaded format=xelatex 2021.9.26)  26 SEP 2021 11:23
+This is XeTeX, Version 3.141592653-2.6-0.999993 (TeX Live 2021/W32TeX) (preloaded format=xelatex 2021.9.26)  26 SEP 2021 16:02
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**c:/Users/78445/Desktop/Maththesis_Master_20200110/Maththesis
-(c:/Users/78445/Desktop/Maththesis_Master_20200110/Maththesis.tex
+**c:/Users/78445/Desktop/Maththesis_Master/Maththesis
+(c:/Users/78445/Desktop/Maththesis_Master/Maththesis.tex
 LaTeX2e <2020-10-01> patch level 4
 L3 programming layer <2021-02-18> (./zjuthesis.cls (d:/texlive/2021/texmf-dist/tex/latex/base/book.cls
 Document Class: book 2020/04/10 v1.4m Standard LaTeX document class
@@ -1009,31 +1009,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 ]
 Chapter 2.
-File: ./images/zhubajie.png Graphic file (type bmp)
-<./images/zhubajie.png>
-
-LaTeX Font Warning: Font shape `U/rsfs/m/n' in size <10.53937> not available
-(Font)              size <10.95> substituted on input line 24.
-
-
-Package fontspec Warning: Font "FandolHei-Regular" does not contain requested
-(fontspec)                Script "CJK".
-
-
-Package fontspec Info: Font family 'FandolHei-Regular(0)' created for font
-(fontspec)             'FandolHei-Regular' with options
-(fontspec)             [Script={CJK},Extension={.otf},BoldFont={FandolHei-Bold}].
-(fontspec)              
-(fontspec)              This font family consists of the following NFSS
-(fontspec)             series/shapes:
-(fontspec)              
-(fontspec)             - 'normal' (m/n) with NFSS spec.:
-(fontspec)             <->"[FandolHei-Regular.otf]/OT:language=dflt;"
-(fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
-(fontspec)             - 'bold' (b/n) with NFSS spec.:
-(fontspec)             <->"[FandolHei-Bold.otf]/OT:language=dflt;"
-(fontspec)             - 'bold small caps'  (b/sc) with NFSS spec.: 
-
+) (./chapters/chapter3.tex
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 12.64723pt, for example:
@@ -1044,16 +1020,8 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 [2
 
 ]
-
-Package fontspec Warning: Font "FandolHei-Regular" does not contain requested
-(fontspec)                Script "CJK".
-
-LaTeX Font Info:    Trying to load font information for TU+phv on input line 77.
-LaTeX Font Info:    No file TUphv.fd. on input line 77.
-
-LaTeX Font Warning: Font shape `TU/phv/m/n' undefined
-(Font)              using `TU/lmr/m/n' instead on input line 77.
-
+Chapter 3.
+) (./chapters/chapter4.tex
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 12.64723pt, for example:
@@ -1061,11 +1029,10 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller to compensate:
 (fancyhdr)                \addtolength{\topmargin}{-0.64723pt}.
 
-[3]
+[3
 
-LaTeX Font Warning: Font shape `U/rsfs/m/n' in size <7.52812> not available
-(Font)              size <8> substituted on input line 129.
-
+]
+Chapter 4.
 )
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -1074,7 +1041,9 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller to compensate:
 (fancyhdr)                \addtolength{\topmargin}{-0.64723pt}.
 
-[4] (./chapters/bib.tex) (./chapters/resume.tex
+[4
+
+] (./chapters/bib.tex) (./chapters/resume.tex
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 12.64723pt, for example:
@@ -1095,22 +1064,14 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 [6
 
-] (./Maththesis.aux)
-
-LaTeX Font Warning: Size substitutions with differences
-(Font)              up to 0.47188pt have occurred.
-
-
-LaTeX Font Warning: Some font shapes were not available, defaults substituted.
-
- ) 
+] (./Maththesis.aux) ) 
 Here is how much of TeX's memory you used:
- 15481 strings out of 476919
- 341832 string characters out of 5825424
- 710183 words of memory out of 5000000
- 34991 multiletter control sequences out of 15000+600000
- 425537 words of font info for 206 fonts, out of 8000000 for 9000
+ 15211 strings out of 476919
+ 329283 string characters out of 5825424
+ 703797 words of memory out of 5000000
+ 34743 multiletter control sequences out of 15000+600000
+ 419488 words of font info for 167 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 128i,20n,130p,426b,532s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 128i,11n,130p,417b,448s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on Maththesis.pdf (16 pages).
