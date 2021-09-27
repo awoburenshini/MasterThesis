@@ -1,9 +1,32 @@
 \chapter{连续介质力学} \label{chap2}
+\section{引言}
 连续介质力学是本文构建控制方程的理论基础。
+基于连续介质力学，我们刻画流体以及流体表面，并从两个
+视角来描述物体运动，以此构建动力学方程。为了构建完整的控制方程，我们还需要给出本构模型，
+即形变与势能的关系，这里我们给出对应的流体的弱可压缩模型以及表面张力模型。
+
 \section{欧拉视角下的动力学}
+欧拉视角，即物理量的定义域为$\mathbb{R}^3$,对物体的刻画由空间中的密度场给出。与拉格朗日视角的区别我们将在2.3小节中给出。
+
+\subsection{欧拉视角下的质量守恒定律}
+记$\rho : \mathbb{R}^3 \times \mathbb{R} \rightarrow \mathbb{R}$ 为空间中随时间变化的密度场，
+$v : \mathbb{R}^3 \times \mathbb{R} \rightarrow \mathbb{R}^3$ 为空间中随时间变化的速度场。
+
+
+现在考虑一个闭区域$\Omega$，$\Omega$的边界记为$\partial \Omega$，边界上的法向记为
+$n$，同时假定$\rho$ 和 $v$在 $\Omega$的一个开邻域内足够光滑。根据质量守恒，我们有$\Omega$上质量的
+变化率为$\partial \Omega$上质量的流出率和流入率之和。即
+\begin{equation}
+    \begin{split}
+        \frac{d}{dt}\int_{\Omega} \rho(x,t)dx &= \int_{\partial \Omega} \rho v \cdot n ds \\
+        \int_{\Omega} \frac{\partial}{\partial t} \rho (x,t)dx &= \int_{\partial \Omega} div(\rho v)dx\\ 
+    \end{split}
+\end{equation}
+$$ $$
+
+
+
 \section{拉格朗日视角下的动力学}
 \section{弱可压缩流体}
 \section{表面张力}
-
-
 
