@@ -11,18 +11,32 @@
 \subsection{欧拉视角下的质量守恒定律}
 记$\rho : \mathbb{R}^3 \times \mathbb{R} \rightarrow \mathbb{R}$ 为空间中随时间变化的密度场，
 $v : \mathbb{R}^3 \times \mathbb{R} \rightarrow \mathbb{R}^3$ 为空间中随时间变化的速度场。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.5]{./images/image1.png}
+    \caption{}
+    \label{fig:example}
+\end{figure}
 
-
-现在考虑一个闭区域$\Omega$，$\Omega$的边界记为$\partial \Omega$，边界上的法向记为
-$n$，同时假定$\rho$ 和 $v$在 $\Omega$的一个开邻域内足够光滑。根据质量守恒，我们有$\Omega$上质量的
+现在考虑一个$\mathbb{R}^3$闭区域$\Omega$，$\Omega$的边界记为$\partial \Omega$，边界上的法向记为
+$n$(如图2.1)。同时假定$\rho$ 和 $v$在 $\Omega \times (t_0 - \epsilon, t_0 + \epsilon)$的一个开邻域内足够光滑。根据质量守恒，我们有$\Omega$上质量的
 变化率为$\partial \Omega$上质量的流出率和流入率之和。即
 \begin{equation}
     \begin{split}
-        \frac{d}{dt}\int_{\Omega} \rho(x,t)dx &= \int_{\partial \Omega} \rho v \cdot n ds \\
-        \int_{\Omega} \frac{\partial}{\partial t} \rho (x,t)dx &= \int_{\partial \Omega} div(\rho v)dx\\ 
+        \frac{d}{dt} \Big |_{t = t_0}\int_{\Omega} \rho(x,t)dx &= -\int_{\partial \Omega} \rho(x,t_0) v(x,t_0) \cdot n(x) ds \\
+        \int_{\Omega} \frac{\partial}{\partial t}\Big |_{t = t_0} \rho (x,t)dx &= -\int_{\partial \Omega} div(\rho(x,t_0) v(x,t_0))dx\nonumber\\
     \end{split}
 \end{equation}
-$$ $$
+
+由于$\Omega$的任意性,由上式可以得到
+
+\begin{equation}
+    \frac{\partial}{\partial t}\Big |_{t = t_0}\rho(x,t) + div(\rho v) = 0
+\end{equation}
+
+\subsection{欧拉视角下的动量守恒定律}
+现在考虑闭区域$\Omega$上的动量变化，根据连续介质力学中的牛顿运动定律，
+
 
 
 
