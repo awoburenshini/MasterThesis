@@ -125,7 +125,16 @@ $$\int_{\hat{\Omega}_0} \rho(x,0)dx = \int_{\hat{\Omega}_t} \rho(x,t)dx = \int_{
         &=\int_{\hat{\Omega}_{t_0}}\rho(x,t_0)\frac{d}{dt}\Big |_{t = t_0} v(\phi_{t,t_0}(x),t)dx\nonumber
     \end{split}
 \end{equation}
-这里$\phi_{t,t_0} = \phi_t \cdot \phi_{t_0}^{-1}$
+这里$\phi_{t,t_0} = \phi_t \cdot \phi_{t_0}^{-1}$，带入(2.6)中就有
+\begin{equation}
+    \begin{split}
+        \int_{\hat{\Omega}_{t_0}}\rho(x,t_0)\frac{d}{dt}\Big |_{t = t_0} v(\phi_{t,t_0}(x),t)dx = \int_{\hat{\Omega}_{t_0}} div(\sigma) dx + \int_{\hat{\Omega}_{t_0}} \rho g dx\nonumber
+    \end{split}
+\end{equation}
+
+
+
+
 
 \section{弱可压缩流体}
 \section{表面张力}
