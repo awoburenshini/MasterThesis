@@ -64,7 +64,69 @@ $$div(A)_i := \sum_j \partial_j A_{ij}$$
  假定在自然状态下（$t = 0$），材料占据的空间为$\Omega_0 \subset \mathbb{R}^3$，此时也称$\Omega_0$为参考构型。对于任意给定的$t\in (0,+\infty)$,
  此时材料占据的空间为$\Omega_t \subset \mathbb{R}^3$，相对于参考构型$\Omega_0$，称$\Omega_t$为当前构型。
 
-　拉格朗日视角和欧拉视角的区别主要是函数的定义域。在上一节中，我们所有函数的定义域都在$\mathbb{R}^3$上，而本节我们将把视角限制在材料上，即
+　拉格朗日视角和欧拉视角的区别主要是函数的定义域。在上一节中，我们所有函数的定义域都在$\mathbb{R}^3$上，而本节我们将把视角限制在材料上，例如对于任意时刻$t$,
+ 有$\Omega_t$上的实值函数，$f(\cdot,t) :\Omega_t \rightarrow \mathbb{R} $。
+
+ \subsection{形变映射，形变梯度，速度}
+ 为了描述材料相对于参考构型发生的形变，我们引入形变映射 $$\phi:\Omega_0 \times [0,+\infty) \rightarrow \mathbb{R}^3$$,形变映射同时也给出了物体的运动轨迹。
+ 为了方便，我们记$\phi_t (x) = \phi(x,t)$，实际上我们还假定$\{ \phi_t(x): t\in \mathbb{R}\}$构成了一个单参数变换群，并且关于$t$至少二阶光滑，关于$X$至少有连续的一阶导数。
+
+ 有了形变映射，我们可以引入对局部形变的刻画，即形变梯度$F(X,t):=\frac{\partial \phi_t(X)}{\partial X}$。实际上，形变梯度$F(X,t)$还可以视为$X$处切空间的映射，即
+ $$F(X,t):T_X \Omega_0 \rightarrow T_x \Omega_t$$
+ 对于任意的$\partial_X \in T_X \Omega_0$, $\partial_x = F(X,t)[\partial_X] \in \Omega_t$, 
+ 即形变梯度将$X$点的切向量$\partial_X$经过平移起始点，旋转方向，拉伸长度后得到$x$点的切向量$\partial_x$,如图2.2所示。
+ \begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=1.0]{./images/image2.png}
+    \caption{形变与形变梯度}
+    \label{fig:deformation gradient}
+\end{figure}
+
+同样的，形变映射作为单参数变换群，自然的导出速度的定义$V(X,t):= \frac{\partial \phi_t(X)}{\partial t}$。 值得注意的是，$V(X,t)$的定义域是在$\Omega_0$上，其值域
+是一个起始点在$\Omega_t$上的一个三维列向量。
+
+\subsection{拉格朗日视角下的质量守恒}
+在引入了形变$\phi_t$之后，很自然的有$\hat{\Omega}_t = \{\phi_t(X):X\in \hat{\Omega}_0 \subset \Omega_0 \}$(简记为$\phi_t(\hat{\Omega}_0)$),且$\hat{\Omega}_t \subset \Omega_t$，
+根据质量守恒，形变不会影响质量，即
+$$\int_{\hat{\Omega}_0} \rho(x,0)dx = \int_{\hat{\Omega}_t} \rho(x,t)dx = \int_{\phi_t(\hat{\Omega}_0)} \rho(x,t)dx$$
+如果我们将$\hat{\Omega}_t$的质量记为$M[\hat{\Omega}_t]$,则有$\frac{d}{dt}M[\hat{\Omega}_t] = 0$。而
+\begin{equation}
+    \begin{split}
+        \frac{d}{dt} \int_{\phi_t(\hat{\Omega}_0)} \rho(x,t)dx &= \frac{d}{dt} \int_{\hat{\Omega}_0} \rho(\phi_t(X),t) det(F(X,t))dX\\
+        &= \int_{\hat{\Omega}_0} \frac{d}{dt} [\rho(\phi_t(X),t) det(F(X,t))] dX \\
+        &= 0\nonumber
+    \end{split}
+\end{equation}
+
+记 $R(X,t):=\rho(\phi_t(X),t)$，$J(X,t):=det(F(X,t))$, 则根据$\hat{\Omega}_0$的任意性，有$\frac{d}{dt}[R(X,t)J(X,t)] = 0$,即
+\begin{equation}
+    R(X,t)J(X,t) = R(X,0)
+\end{equation}
+
+\subsection{拉格朗日视角下的动量守恒}
+在拉格朗日视角下，$\hat{\Omega}_{t_0}$的动量变化可以表示为作用在$\hat{\Omega}_{t_0}$边界上的力以及作用在$\hat{\Omega}_{t_0}$
+上的力之和。即
+\begin{equation}
+    \begin{split}
+        \frac{d}{dt}\Big |_{t = t_0}\int_{\hat{\Omega}_t}\rho(x,t)v(x,t)dx = -\int_{\partial \hat{\Omega}_{t_0}} \rho v (v\cdot n) ds + \int_{\partial \hat{\Omega}_{t_0}} \sigma \cdot n ds + \int_{\hat{\Omega}_{t_0}} \rho g dx
+    \end{split}
+\end{equation}
+其中(2.6)式子的左手边有
+\begin{equation}
+    \begin{split}
+        \frac{d}{dt}\Big |_{t = t_0}\int_{\hat{\Omega}_t}\rho(x,t)v(x,t)dx &= \frac{d}{dt}\Big |_{t = t_0} \int_{\hat{\Omega}_0}\rho(\phi_t(X),t)v(\phi_t(X),t)J(X,t)dX\\
+        &=\int_{\hat{\Omega}_0} \frac{d}{dt}\Big |_{t = t_0} [\rho(\phi_t(X),t)v(\phi_t(X),t)J(X,t)]dX\\
+        &=\int_{\hat{\Omega}_0} \frac{d}{dt}\Big |_{t = t_0} [\rho(\phi_t(X),t)v(\phi_t(X),t)J(X,t)]dX\\
+        &=\int_{\hat{\Omega}_0} v(\phi_{t_0}(X),t_0)\frac{d}{dt}\Big |_{t = t_0}[\rho(\phi_t(X),t) J(X,t)] \\
+        &+ \rho(\phi_{t_0}(X),{t_0})J(X,t_0)\frac{d}{dt}\Big |_{t = t_0} v(\phi_{t_0}(X),t_0) dX\nonumber\\ 
+        &=\int_{\hat{\Omega}_0}v(\phi_{t_0}(X),t_0)\frac{d}{dt}\Big |_{t = t_0}R(X,0) \\
+        &+ \rho(\phi_{t_0}(X),{t_0})J(X,t_0)\frac{d}{dt}\Big |_{t = t_0} v(\phi_{t}(X),t)dX\\
+        &=\int_{\hat{\Omega}_0}\rho(\phi_{t_0}(X),{t_0})J(X,t_0)\frac{d}{dt}\Big |_{t = t_0} v(\phi_{t}(X),t)dX\\
+        &=\int_{\hat{\Omega}_{t_0}}\rho(x,t_0)\frac{d}{dt}\Big |_{t = t_0} v(\phi_{t,t_0}(x),t)dx\nonumber
+    \end{split}
+\end{equation}
+这里$\phi_{t,t_0} = \phi_t \cdot \phi_{t_0}^{-1}$
+
 \section{弱可压缩流体}
 \section{表面张力}
 
