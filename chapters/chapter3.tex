@@ -89,6 +89,130 @@ $r$，则将格点标记为1，如此下来，所有的正方体格点都被标�
 无法保证，甚至可以明显看出在一些尖锐地方，网格质量极差，上述的问题给我们计算表面张力带来了很大的阻碍。
 
 \section{LSIPIA}
-为了解决法向不连续的问题以及网格质量差的问题，我们使用隐式曲面来逼近三角网格。
+为了解决法向不连续的问题以及网格质量差的问题，我们使用二阶连续的隐式曲面来逼近三角网格，因此隐式曲面的法向一阶连续。
 
+\subsection{隐式曲面的渐进迭代逼近}
+我们首先给出隐式曲面重建问题，给定一个无序点集$\mathcal{V} = \{v_i = (v_i^1,v_i^2,v_i^3)\}_{i = 1}^n$以及点
+上的单位法向量$\mathcal{N} = \{n_i = (n_i^1, n_i^2, n_i^3)\}_{i = 1}^n$，寻找一个函数$f(x^1,x^2,x^3)$使得
+$f(x^1,x^2,x^3)$的$0$水平集拟合该组无序点集$\mathcal{V}$。以数学的表达形式即为
+\begin{equation}
+    \begin{split}
+        \min_f\sum_{i = 1}^{n} f(v_i^1,v_i^2,v_i^3)^2       
+    \end{split}
+\end{equation}
+为了让问题可解，我们选择$f$为有限个张量积B-样条基函数的线性组合，即$$f(x^1,x^2,x^3) = \sum_{i = 1}^{N_x}\sum_{j = 1}^{N_y}\sum_{k = 1}^{N_z} C_{ijk}B_i(x^1)B_j(x^2)B_k(x^3)$$
+这里我们选择二阶B-样条基函数，其中二阶标准B-样条函数
+$$B(x) = \begin{cases}
+    \frac{3}{4} - \left | x \right | ^2  & 0 \leq \left | x \right | < \frac{1}{2}\\
+    \frac{1}{2}(\frac{3}{2} - \left | x \right |)^2 & \frac{1}{2}\leq \left | x \right | <\frac{3}{2}\\
+    0 & \frac{3}{2} \leq \left | x \right |
+   \end{cases}$$
+如图\ref{fig: standard B-spline basis}所示，这里$B_i(x) := B(\frac{1}{h}(x - g_i))$，这里的$g_i$本文选取为空间立方体网格格点，$h$为立方体宽度。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.2]{./images/image8.png}
+    \caption{二次标准B-样条基函数}
+    \label{fig: standard B-spline basis}
+\end{figure}
+则最小化问题(3.2)转化成
+\begin{equation}
+    \begin{split}
+        \min_{C_{ijk}}E(C_{111},C_{112},...,C_{N_xN_yN_z}):=\frac{1}{2}\sum_{i = 1}^{n} f(v_i^1,v_i^2,v_i^3)^2 
+    \end{split}
+\end{equation}
+这里$C_{ijk}$张量积B-样条系数。
+
+我们记三变量B-样条基函数为$B_{ijk}(x^1,x^2,x^3) = B_i(x^1)B_j(x^2)B_k(x^3)$，则上述问题变为
+\begin{equation}
+    \begin{split}
+        &\min_{C_{ijk}}E(C_{111},C_{112},...,C_{N_xN_yN_z}):= \frac{1}{2}\sum_{r = 1}^{n} (\sum_{ijk}C_{ijk}B_{ijk}(v_r^1,v_r^2,v_r^3))^2 \\
+        &\Leftrightarrow \delta E(\{C_{ijk}\}) = 0\\
+        &\Leftrightarrow \delta (\frac{1}{2}\sum_{r = 1}^{n} (\sum_{ijk}C_{ijk}B_{ijk}(v_r^1,v_r^2,v_r^3))^2) = 0\\
+        &\Leftrightarrow \sum_{r = 1}^{n} \sum_{ijk} \sum_{uvw}C_{ijk}B_{ijk}(v_r^1,v_r^2,v_r^3)B_{uvw}(v_r^1,v_r^2,v_r^3)\delta C_{uvw} = 0\\
+        &\Leftrightarrow \sum_{r = 1}^n \sum_{ijk} C_{ijk} B_{ijk}(v_r^1,v_r^2,v_r^3)B_{uvw}(v_r^1,v_r^2,v_r^3) = 0
+    \end{split}
+\end{equation}
+我们将$\{B_{111},B_{112},...,B_{11N_z},...,B_{1Ny1},...B_{N_xN_yN_z}\}$以字典序排列，这样我们可配置如下矩阵
+\begin{align*}
+    \mathbf{B} = \begin{bmatrix}
+        B_{111}(v_1^1,v_1^2,v_1^3) & B_{112}(v_1^1,v_1^2,v_1^3) &...& B_{N_xN_yN_z}(v_1^1,v_1^2,v_1^3)\\
+        B_{111}(v_2^1,v_2^2,v_2^3) & B_{112}(v_2^1,v_2^2,v_2^3) &...& B_{N_xN_yN_z}(v_2^1,v_2^2,v_2^3)\\
+         \vdots & \vdots & & \vdots\\
+        B_{111}(v_r^1,v_r^2,v_r^3) & B_{112}(v_r^1,v_r^2,v_r^3) &...& B_{N_xN_yN_z}(v_r^1,v_r^2,v_r^3)\\
+    \end{bmatrix}
+\end{align*}
+同样对于$\{C_{111},...,C_{N_xN_yN_z}\}$我们有
+\begin{align*}
+    \mathbf{C} = \begin{bmatrix}
+        C_{111} \\
+        \vdots \\
+        C_{N_xN_yN_z}\\
+    \end{bmatrix}
+\end{align*}
+代入(3.3)最后一个式子中，我们可以得到一个紧凑的形式
+$$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
+然而，在实践中以上线性系统并非有唯一解，并且有平凡解($\mathbf{C} = 0$)。为了避免陷入平凡解，我们添加法向扰动。
+我们利用本小节开头提到的每一点上的法向信息$\mathcal{N}$，我们利用法向取一些偏移点$\mathcal{Q} = \{q_i = v_i + \epsilon n_i: v_i \in \mathcal{V}, n_i \in \mathcal{N}\}$。
+然后尽可能要求$f(q_i) = \epsilon, i = 1,2,3,...n$。据此我们修改(3.3)中的优化问题，
+\begin{equation}
+    \begin{split}
+        &\min_{C_{ijk}}E(C_{111},C_{112},...,C_{N_xN_yN_z}):= \frac{1}{2}\sum_{r = 1}^{n} [ (\sum_{ijk}C_{ijk}B_{ijk}(v_r^1,v_r^2,v_r^3))^2 + (\epsilon - \sum_{ijk}C_{ijk}B_{ijk}(q_r^1,q_r^2,q_r^3))^2]\\
+        &\Leftrightarrow \sum_{r = 1}^n (\sum_{ijk}C_{ijk} B_{ijk}(v_r^1,v_r^2,v_r^3)B_{uvw}(v_r^1,v_r^2,v_r^3) - ( \epsilon - \sum_{ijk} C_{ijk}B_{ijk}(q_r^1,q_r^2,q_r^3) )B_{uvw}(q_r^1,q_r^2,q_r^3))\\
+    \end{split}
+\end{equation}
+
+\begin{align*}
+    \mathbf{B} = \begin{bmatrix}
+        B_{111}(v_1^1,v_1^2,v_1^3) & B_{112}(v_1^1,v_1^2,v_1^3) &...& B_{N_xN_yN_z}(v_1^1,v_1^2,v_1^3)\\
+        B_{111}(v_2^1,v_2^2,v_2^3) & B_{112}(v_2^1,v_2^2,v_2^3) &...& B_{N_xN_yN_z}(v_2^1,v_2^2,v_2^3)\\
+         \vdots & \vdots & & \vdots\\
+        B_{111}(v_r^1,v_r^2,v_r^3) & B_{112}(v_r^1,v_r^2,v_r^3) &...& B_{N_xN_yN_z}(v_r^1,v_r^2,v_r^3)\\
+        B_{111}(q_1^1,q_1^2,q_1^3) & B_{112}(q_1^1,q_1^2,q_1^3) &...& B_{N_xN_yN_z}(q_1^1,q_1^2,q_1^3)\\
+        B_{111}(q_2^1,q_2^2,q_2^3) & B_{112}(q_2^1,q_2^2,q_2^3) &...& B_{N_xN_yN_z}(q_2^1,q_2^2,q_2^3)\\
+        \vdots & \vdots & & \vdots\\
+        B_{111}(q_r^1,q_r^2,q_r^3) & B_{112}(q_r^1,q_r^2,q_r^3) &...& B_{N_xN_yN_z}(q_r^1,q_r^2,q_r^3)\\
+    \end{bmatrix}
+\end{align*}
+如果再记
+\begin{align*}
+    \mathbf{b} = \begin{bmatrix}
+        0\\
+        \vdots\\
+        0\\
+        \epsilon \\
+        \vdots \\
+        \epsilon
+    \end{bmatrix}
+\end{align*}
+其中$\mathbf{b}$的前$n$项为$0$，后$n$项为$\epsilon$。则(3.4)式可以写成紧凑的形式
+\begin{equation}
+    \mathbf{B}^T ( \mathbf{b} - \mathbf{B} \mathbf{C}) = 0    
+\end{equation}
+求解该线性系统，我们使用迭代法求解，与IPIA[**]不同，我们的迭代格式为
+\begin{equation}
+\mathbf{C}^{\alpha + 1} = \mathbf{C}^{\alpha} + \Lambda \mathbf{B}^T(\mathbf{b} - \mathbf{B}\mathbf{C}^{\alpha}) , \alpha = 0,1,2...
+\end{equation}
+这里$\Lambda$为
+\begin{equation}
+    \begin{split}
+        \begin{bmatrix}
+            \frac{1}{\sum_{r = 1}^n B_{111}(v_r) +B_{111}(q_r)} & 0 & ... & 0\\
+            0 & \frac{1}{\sum_{r = 1}^n B_{112}(v_r) +B_{112}(q_r)} & ... & 0\\
+            \vdots & \vdots & ... & \vdots \\
+            0 & 0 & ... & \frac{1}{\sum_{r = 1}^n B_{N_xN_yN_z}(v_r) +B_{N_xN_yN_z}(q_r)} \\
+        \end{bmatrix}
+    \end{split}
+\end{equation}
+这里$B_{ijk}(x) = B_{ijk}(x^1,x^2,x^3)$，并假设$\Lambda$可逆(即$\forall ijk ,\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) \neq 0$)，否则认为有某个节点$ijk$满足$\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) = 0$，由于B-样条基函数非负，则$B_{ijk}(v_r) = B_{ijk}(q_r) = 0$，我们可以去掉该节点，同时去掉对应的$\mathbf{B}$和$\mathbf{C}$对应的行，其并不影响点云附近的隐式曲面构建。以下我们便在假定$\Lambda$可逆的条件下证明迭代格式收敛。
 \subsection{收敛性证明}
+\begin{thm}
+    若迭代格式(3.6)收敛，则收敛结果$\mathbf{C}$为方程(3.5)的解
+\end{thm}
+\begin{pro}
+    (3.5)等式两边关于$\alpha$取极限得$\mathbf{C} = \mathbf{C} + \Lambda \mathbf{B}^T(\mathbf{b} - \mathbf{B}\mathbf{C})$，由于$\Lambda$可逆
+    故有$\mathbf{B}^T(\mathbf{b} - \mathbf{B}\mathbf{C}) = 0$
+\end{pro}
+
+\begin{lem}
+\end{lem}
+
