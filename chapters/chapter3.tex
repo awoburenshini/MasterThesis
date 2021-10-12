@@ -38,7 +38,7 @@ $\mathcal{S}(\mathcal{V}) = \{x\in \mathbb{R}^3: d(x,\mathcal{V}) = r\}$。
     \label{fig:grid and sphere}
 \end{figure}
 
-本小节我们的目标只是提取出一个大致的点云的表面轮廓，如图\ref{fig:2D marching cube}所示。我们首先将空间离散化成一个个均匀的立方体，并对每一个正方体格点放置一个标志符，默认为0，此处记立方体宽度为$h$，为了保证球能够覆盖到一个足够大的
+本小节我们的目标只是提取出一个大致的点云的表面轮廓，如图\ref{fig:2D marching cube}所示。我们首先将空间离散化成一个个均匀的立方体，我们称之为背景网格，并对每一个正方体格点放置一个标志符，默认为0，此处记立方体宽度为$h$，为了保证球能够覆盖到一个足够大的
 面积，此处我们选择$r = \sqrt{3}h$，二维情况为$r = \sqrt{2}h$，具体如图\ref{fig:grid and sphere}所示。本文为了节省内存，
 具体实现使用了八叉树数据结构。之后对每一个粒子操作，将粒子周围的格点做标记，如果格点距离该粒子半径不超过
 $r$，则将格点标记为1，如此下来，所有的正方体格点都被标记为两种状态。之后我们对正方体按格点状态进行分类，由于每个格点有
@@ -49,7 +49,7 @@ $r$，则将格点标记为1，如此下来，所有的正方体格点都被标�
     \caption{Marching cube列表}
     \label{fig:marching cube table}
 \end{figure}
-之后我们再将网格顶点位置调整到合适的位置，并建立三角网格数据结构。具体算法见\ref{alg:marching cube}。
+之后我们再将网格顶点位置调整到合适的位置，并建立三角网格数据结构。具体的算法描述见\textbf{Algorithm \ref{alg:marching cube}}。
 \begin{algorithm}
     \caption{Marching cube}
     \label{alg:marching cube}
@@ -203,16 +203,60 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
         \end{bmatrix}
     \end{split}
 \end{equation}
-这里$B_{ijk}(x) = B_{ijk}(x^1,x^2,x^3)$，并假设$\Lambda$可逆(即$\forall ijk ,\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) \neq 0$)，否则认为有某个节点$ijk$满足$\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) = 0$，由于B-样条基函数非负，则$B_{ijk}(v_r) = B_{ijk}(q_r) = 0$，我们可以去掉该节点，同时去掉对应的$\mathbf{B}$和$\mathbf{C}$对应的行，其并不影响点云附近的隐式曲面构建。以下我们便在假定$\Lambda$可逆的条件下证明迭代格式收敛。
-\subsection{收敛性证明}
-\begin{thm}
-    若迭代格式(3.6)收敛，则收敛结果$\mathbf{C}$为方程(3.5)的解
-\end{thm}
-\begin{pro}
-    (3.5)等式两边关于$\alpha$取极限得$\mathbf{C} = \mathbf{C} + \Lambda \mathbf{B}^T(\mathbf{b} - \mathbf{B}\mathbf{C})$，由于$\Lambda$可逆
-    故有$\mathbf{B}^T(\mathbf{b} - \mathbf{B}\mathbf{C}) = 0$
-\end{pro}
+这里$B_{ijk}(x) = B_{ijk}(x^1,x^2,x^3)$，并假设$\Lambda$可逆(即$\forall ijk ,\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) \neq 0$)，否则认为有某个节点$ijk$满足$\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) = 0$，由于B-样条基函数非负，则$B_{ijk}(v_r) = B_{ijk}(q_r) = 0$，我们可以去掉该节点，同时去掉对应的$\mathbf{B}$和$\mathbf{C}$对应的行，其并不影响点云附近的隐式曲面构建。
+所以我们不妨假定$\Lambda$可逆。有关收敛性的证明，详见[**]。本迭代格式相较于IPIA格式最大的优势就是内存占用少，可高度并行，我们从\textbf{Algorithm \ref{alg:LSIPIA}}来分析这一点。
+我们可以发现\textbf{Algorithm \ref{alg:LSIPIA}}在第4行，第15行，第22行对应的循环以可高度并行。同时需要的额外内存为储存在每个格点$\mathcal{G}$上的$C_{ijk}$，$\lambda_{ijk}$，$\Delta_{ijk}$。而这一点，我们将在下一节中
+说明里所需的额外内存可以借用物质点法中的数据结构完成，也就是说LSIPIA的优势为可复用物质点法的数据结构，同时可以高度并行。
+\begin{algorithm}
+    \caption{LSIPIA}
+    \label{alg:LSIPIA}
+    \begin{algorithmic}[1]
+    \Require 点云位置$\mathcal{V}$,点云法向$\mathcal{N}$,背景网格格点集合$\mathcal{G}$,指定迭代次数$LoopTimes$
+    \Ensure 隐式曲面$f(x) = \sum_{ijk} C_{ijk}B_{ijk}(x)$,即输出参数值$C_{ijk}$
+    \State 初始化$\forall ijk,C_{ijk} = 0$
+    \State 初始化$\forall ijk,\lambda_{ijk} = 0$
+    \State 初始化偏移量$\epsilon$
+    \For{$r \in \#\mathcal{V}$}
+        \State 预计算下标为$I = \{ijk : v_r \in supp(B_{ijk})\}$的张量积B-样条函数，储存为$B_{ijk}(v_r)$
+        \For{$ijk \in I$}
+            \State $\lambda_{ijk} \leftarrow \lambda_{ijk} + B_{ijk}(v)$
+        \EndFor
+        \State $v_{\epsilon r} \leftarrow v_r + \epsilon n_r$
+        \State 预计算下标为$I_{\epsilon} = \{ijk : v_{\epsilon r} \in supp(B_{ijk})\}$的张量积B-样条函数，储存为$B_{ijk}(v_{\epsilon r})$
+        \For{$ijk \in I_{\epsilon}$}
+            \State $\lambda_{ijk} \leftarrow \lambda_{ijk} + B_{ijk}(v_{\epsilon r})$
+        \EndFor
+    \EndFor
+    
+    \For{$ijk \in \mathcal{G}$}
+        \If {$\lambda_{ijk}\neq 0$} 
+            \State $\lambda_{ijk}\leftarrow \frac{1}{\lambda_{ijk}}$
+        \EndIf
+    \EndFor
 
-\begin{lem}
-\end{lem}
+    \State 初始化$\forall ijk,\Delta_{ijk} = 0$
+    \For{$i = 1,\dots,LoopTimes$}
+        \For{$r \in \#\mathcal{V}$}
+            \State 预计算下标为$I = \{ijk : v_r \in supp(B_{ijk})\}$的张量积B-样条函数，储存为$B_{ijk}(v_r)$
+            \State $res = 0$
+            \For{$ijk \in I$}
+                \State $res \leftarrow res + B_{ijk}(v_r)$ 
+            \EndFor
+            \State $\delta_r = 0 - res$
+            \For{$ijk \in I$}
+                \State $\Delta_{ijk}\leftarrow \Delta_{ijk} + \delta_r \cdot B_{ijk}(v_r)$ 
+                \State 重置$\Delta_{ijk}$为0
+            \EndFor
+        \EndFor
+    \EndFor
+
+    \end{algorithmic}
+\end{algorithm}
+
+\subsection{快速法向计算}
+在完成\textbf{Algorithm \ref{alg:LSIPIA}}之后，我们获得了一个二阶连续的隐式曲面。即
+\begin{equation}
+    f(x) = \sum_{ijk} C_{ijk}B_{ijk}(x)
+\end{equation}
+获取法向我们可以直接计算其梯度$\nabla f$。我们首先分析计算一个点上的梯度所需要的代价。
 
