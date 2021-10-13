@@ -205,8 +205,10 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \end{equation}
 这里$B_{ijk}(x) = B_{ijk}(x^1,x^2,x^3)$，并假设$\Lambda$可逆(即$\forall ijk ,\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) \neq 0$)，否则认为有某个节点$ijk$满足$\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) = 0$，由于B-样条基函数非负，则$B_{ijk}(v_r) = B_{ijk}(q_r) = 0$，我们可以去掉该节点，同时去掉对应的$\mathbf{B}$和$\mathbf{C}$对应的行，其并不影响点云附近的隐式曲面构建。
 所以我们不妨假定$\Lambda$可逆。有关收敛性的证明，详见[**]。本迭代格式相较于IPIA格式最大的优势就是内存占用少，可高度并行，我们从\textbf{Algorithm \ref{alg:LSIPIA}}来分析这一点。
-我们可以发现\textbf{Algorithm \ref{alg:LSIPIA}}在第4行，第15行，第22行对应的循环以可高度并行。同时需要的额外内存为储存在每个格点$\mathcal{G}$上的$C_{ijk}$，$\lambda_{ijk}$，$\Delta_{ijk}$。而这一点，我们将在下一节中
+我们可以发现\textbf{Algorithm \ref{alg:LSIPIA}}在第4行，第15行，第22行对应的循环可高度并行。同时需要的额外内存为储存在每个格点$\mathcal{G}$上的$C_{ijk}$，$\lambda_{ijk}$，$\Delta_{ijk}$。而这一点，我们将在下一节中
 说明里所需的额外内存可以借用物质点法中的数据结构完成，也就是说LSIPIA的优势为可复用物质点法的数据结构，同时可以高度并行。
+
+[***************************补充实验数据****************************]
 \begin{algorithm}
     \caption{LSIPIA}
     \label{alg:LSIPIA}
@@ -258,6 +260,23 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \begin{equation}
     f(x) = \sum_{ijk} C_{ijk}B_{ijk}(x)
 \end{equation}
-获取法向我们可以直接计算其梯度$\nabla f$。我们首先分析计算一个点上的梯度所需要的代价。
->>>>>>> c6fe07480957eed2828cae3e7acf5e78977cc995
+获取法向我们可以直接计算其梯度$\nabla f$，我们首先分析计算一个点上的梯度所需要的代价。
+首先根据张量积B-样条函数的定义$B_{ijk}(x) = B_i(x^1) * B_j(x^2) * B_k(x^3)$，如果选取的为二次样条，则在二维情况下
+其能够覆盖到点$x$的基函数如图\ref{fig:2D basis}，所以能够覆盖到点$x$的坐标个点为$I = \{ij: i = i_0 + k, j = i_0 + l, \text{其中}k, l \in \{0,1,2\}\}$。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=1.0]{./images/image9.png}
+    \caption{蓝色正方形为其紧支集能够覆盖$x$的自由度，$i_0j_0$为左下角格点坐标}
+    \label{fig:2D basis}
+\end{figure}
 
+而
+\begin{equation}
+    \begin{split}
+        \nabla f &= \sum_{ijk} C_{ijk} \nabla B_{ijk}(x)\\
+        &= \sum_{ijk} C_{ijk} \nabla (B_i(x^1)B_j(x^2)B_k(x^3))\\
+        &= \sum_{ijk} C_{ijk} (\partial_1 B_i(x^1) \cdot B_j(x^2)B_k(x^3), B_i(x^1)\partial_2 B_j(x^2)\cdot B_k(x^3), B_i(x^1)B_j(x^2)\partial_3B_k(x^3))\\
+    \end{split}
+\end{equation}
+可以发现要计算$x$点的梯度$\nabla f$, 我们需要计算的有$B_i(x^r),\partial_r B_i(x^r), i \in \{0,1,2\}, r \in \{1,2,3\}$,其中样条阶数越高，计算$\partial_r B_i(x^r)$代价越大，并且$\partial_r B_i(x^r)$为分段函数,故在不同的$r$之间不可能做到单指令多数据流并行，同样在拼装
+$\nabla B_{ijk}(x)$时每一个维度需要单独的计算。基于这些缺点，我们提出另一个近似法向的计算方法。
