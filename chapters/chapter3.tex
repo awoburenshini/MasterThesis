@@ -205,7 +205,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \end{equation}
 这里$B_{ijk}(x) = B_{ijk}(x^1,x^2,x^3)$，并假设$\Lambda$可逆(即$\forall ijk ,\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) \neq 0$)，否则认为有某个节点$ijk$满足$\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) = 0$，由于B-样条基函数非负，则$B_{ijk}(v_r) = B_{ijk}(q_r) = 0$，我们可以去掉该节点，同时去掉对应的$\mathbf{B}$和$\mathbf{C}$对应的行，其并不影响点云附近的隐式曲面构建。以下我们便在假定$\Lambda$可逆的条件下证明迭代格式收敛。
 \subsection{收敛性证明}
-\begin{thm}
+\begin{thm}C
     若迭代格式(3.6)收敛，则收敛结果$\mathbf{C}$为方程(3.5)的解
 \end{thm}
 \begin{pro}
