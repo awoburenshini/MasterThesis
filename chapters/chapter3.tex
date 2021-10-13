@@ -266,7 +266,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=1.0]{./images/image9.png}
-    \caption{蓝色正方形为其紧支集能够覆盖$x$的自由度，$i_0j_0$为左下角格点坐标}
+    \caption{蓝色正方形为其紧支集能够覆盖$x$的自由度，$x_{i_0j_0}$为左下角格点坐标}
     \label{fig:2D basis}
 \end{figure}
 
@@ -279,4 +279,12 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
     \end{split}
 \end{equation}
 可以发现要计算$x$点的梯度$\nabla f$, 我们需要计算的有$B_i(x^r),\partial_r B_i(x^r), i \in \{0,1,2\}, r \in \{1,2,3\}$,其中样条阶数越高，计算$\partial_r B_i(x^r)$代价越大，并且$\partial_r B_i(x^r)$为分段函数,故在不同的$r$之间不可能做到单指令多数据流并行，同样在拼装
-$\nabla B_{ijk}(x)$时每一个维度需要单独的计算。基于这些缺点，我们提出另一个近似法向的计算方法。
+$\nabla B_{ijk}(x)$时每一个维度需要单独的计算。基于这些缺点，我们提出另一个近似法向的计算方法。这里我们使用移动加权最小二乘来逼近格点系数，我们将会看到在
+格点张量积B-样条基下，移动加权最小二乘将有惊人的简单形式。
+
+我们寻求的近似目标函数为$f_y (x;c) = f(y) + c^T(y - x)$，能量函数设计如下
+\begin{equation}
+    \begin{split}
+        E_y(c) = \frac{1}{2} \sum_{ijk} B_{ijk}(y)(f_y(x_{ijk};c) - C_{ijk})^2
+    \end{split}
+\end{equation}
