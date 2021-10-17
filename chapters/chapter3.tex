@@ -107,7 +107,7 @@ $$B(x) = \begin{cases}
     \frac{1}{2}(\frac{3}{2} - \left | x \right |)^2 & \frac{1}{2}\leq \left | x \right | <\frac{3}{2}\\
     0 & \frac{3}{2} \leq \left | x \right |
    \end{cases}$$
-如图\ref{fig: standard B-spline basis}所示，这里$B_i(x) := B(\frac{1}{h}(x - g_i))$，这里的$g_i$本文选取为空间立方体网格格点，$h$为立方体宽度。
+如图\ref{fig: standard B-spline basis}所示，这里$B_i(x) := B(\frac{1}{h}(x - x_i))$，这里的$x_i$本文选取为空间立方体网格格点坐标的一个分量，$h$为立方体宽度。
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=0.2]{./images/image8.png}
@@ -205,11 +205,12 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \end{equation}
 这里$B_{ijk}(x) = B_{ijk}(x^1,x^2,x^3)$，并假设$\Lambda$可逆(即$\forall ijk ,\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) \neq 0$)，否则认为有某个节点$ijk$满足$\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) = 0$，由于B-样条基函数非负，则$B_{ijk}(v_r) = B_{ijk}(q_r) = 0$，我们可以去掉该节点，同时去掉对应的$\mathbf{B}$和$\mathbf{C}$对应的行，其并不影响点云附近的隐式曲面构建。
 所以我们不妨假定$\Lambda$可逆。有关收敛性的证明，详见[**]。本迭代格式相较于IPIA格式最大的优势就是内存占用少，可高度并行，我们从\textbf{Algorithm \ref{alg:LSIPIA}}来分析这一点。
-我们可以发现\textbf{Algorithm \ref{alg:LSIPIA}}在第4行，第15行，第22行对应的循环以可高度并行。同时需要的额外内存为储存在每个格点$\mathcal{G}$上的$C_{ijk}$，$\lambda_{ijk}$，$\Delta_{ijk}$。而这一点，我们将在下一节中
-说明里所需的额外内存可以借用物质点法中的数据结构完成，也就是说LSIPIA的优势为可复用物质点法的数据结构，同时可以高度并行。以下表格为性能对比。
 
+我们可以发现\textbf{Algorithm \ref{alg:LSIPIA}}在第4行，第15行，第22行对应的循环可高度并行。同时需要的额外内存为储存在每个格点$\mathcal{G}$上的$C_{ijk}$，$\lambda_{ijk}$，$\Delta_{ijk}$。而这一点，我们将在下一节中
+说明里所需的额外内存可以借用物质点法中的数据结构完成，也就是说LSIPIA的优势为可复用物质点法的数据结构，同时可以高度并行。
 
-。。。。。。。。
+[***************************补充实验数据****************************]
+>>>>>>> 8cef0dafae3876eb7e8982e1b555e85f17437f13
 \begin{algorithm}
     \caption{LSIPIA}
     \label{alg:LSIPIA}
@@ -261,5 +262,82 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \begin{equation}
     f(x) = \sum_{ijk} C_{ijk}B_{ijk}(x)
 \end{equation}
-获取法向我们可以直接计算其梯度$\nabla f$。我们首先分析计算一个点上的梯度所需要的代价。
+获取法向我们可以直接计算其梯度$\nabla f$，我们首先分析计算一个点上的梯度所需要的代价。
+首先根据张量积B-样条函数的定义$B_{ijk}(x) = B_i(x^1) * B_j(x^2) * B_k(x^3)$，如果选取的为二次样条，则在二维情况下
+其能够覆盖到点$x$的基函数如图\ref{fig:2D basis}，所以能够覆盖到点$x$的坐标个点为$I = \{ij: i = i_0 + k, j = i_0 + l, \text{其中}k, l \in \{0,1,2\}\}$。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=1.0]{./images/image9.png}
+    \caption{蓝色正方形为其紧支集能够覆盖$x$的自由度，$x_{i_0j_0}$为左下角格点坐标}
+    \label{fig:2D basis}
+\end{figure}
+
+而
+\begin{equation}
+    \begin{split}
+        \nabla f &= \sum_{ijk} C_{ijk} \nabla B_{ijk}(x)\\
+        &= \sum_{ijk} C_{ijk} \nabla (B_i(x^1)B_j(x^2)B_k(x^3))\\
+        &= \sum_{ijk} C_{ijk} (\partial_1 B_i(x^1) \cdot B_j(x^2)B_k(x^3), B_i(x^1)\partial_2 B_j(x^2)\cdot B_k(x^3), B_i(x^1)B_j(x^2)\partial_3B_k(x^3))\\
+    \end{split}
+\end{equation}
+可以发现要计算$x$点的梯度$\nabla f$, 我们需要计算的有$B_i(x^r),\partial_r B_i(x^r), i \in \{0,1,2\}, r \in \{1,2,3\}$,其中样条阶数越高，计算$\partial_r B_i(x^r)$代价越大，并且$\partial_r B_i(x^r)$为分段函数,故在不同的$r$之间不可能做到单指令多数据流并行，同样在拼装
+$\nabla B_{ijk}(x)$时每一个维度需要单独的计算。基于这些缺点，我们提出另一个近似法向的计算方法。这里我们使用移动加权最小二乘来逼近格点系数，我们将会看到在
+格点张量积B-样条基下，移动加权最小二乘将有惊人的简单形式。
+
+我们寻求的近似目标函数为$f_y (x;c) = f(y) + c^T(x - y)$，能量函数设计如下
+\begin{equation}
+    \begin{split}
+        E_y(c) = \frac{1}{2} \sum_{ijk} B_{ijk}(y)(f_y(x_{ijk};c) - C_{ijk})^2
+    \end{split}
+\end{equation}
+对上式取极小我们得到
+\begin{equation}
+    \begin{split}
+        0& = \frac{\partial}{\partial c} E_y(c)\\
+        &= \frac{\partial}{\partial c} \frac{1}{2}\sum_{ijk} B_{ijk}(y)(f(y) + c^T (x_{ijk} - y) - C_{ijk})^2\\
+        &= \sum_{ijk} B_{ijk}(y)(f(y) + c^T (x_{ijk} - y) - C_{ijk}) (x_{ijk} - y)^T\\
+        &= \sum_{ijk} B_{ijk}(y)(f(y) - C_{ijk})(x_{ijk} - y)^T + c^T\sum_{ijk}B_{ijk}(y)(x_{ijk} - y)(x_{ijk} - y)^T\\ 
+    \end{split}
+\end{equation}
+则 $$\sum_{ijk} B_{ijk}(y) (C_{ijk} - f(y)) (x_{ijk} - y) = [\sum_{ijk}B_{ijk}(y)(x_{ijk} - y)(x_{ijk} - y)^T]c $$
+当然我们要计算$c$我们得到如下式子
+\begin{equation}
+    c = [\sum_{ijk}B_{ijk}(y)(x_{ijk} - y)(x_{ijk} - y)^T]^{-1} \cdot \sum_{ijk} B_{ijk}(y) (C_{ijk} - f(y)) (x_{ijk} - y)
+\end{equation}
+这里(3.12)式要成立的条件为$[\sum_{ijk}B_{ijk}(y)(x_{ijk} - y)(x_{ijk} - y)^T]$可逆，我们接下来证明该矩阵可逆。
+
+此处我们记$A = \sum_{ijk}B_{ijk}(y)(x_{ijk} - y)(x_{ijk} - y)^T$。首先我们计算$A$的非对角项即$A_{uv}, u\neq v\text{其中} u,v \in \{1,2,3\}$,这里再记$w \in \{1,2,3\}\text{且} w \notin \{u,v\} $。
+即
+\begin{equation}
+    \begin{split}
+        A_{uv} &= \sum_{i_1 i_2 i_3} B_{i_1 i_2 i_3}(y) (x_{i_1 i_2 i_3}^u - y^u)(x_{i_1 i_2 i_3}^v - y^v)\\
+        & = \sum_{i_u i_v i_w} B_{i_u}(y^u)B_{i_v}(y^v)B_{i_w}(y^w) (x_{i_u i_v i_w}^u - y^u)(x_{i_u i_v i_w}^v - y^v)\\
+        & = \sum_{i_w}B_{i_w}(y^w)(\sum_{i_u}B_{i_u}(y^u)(x_{i_u i_v i_w}^u - y^u))(\sum_{i_v}B_{i_v}(y^v)(x_{i_u i_v i_w}^v - y^v))\\
+        & =  \sum_{i_w}B_{i_w}(y^w)(\sum_{i_u}B_{i_u}(y^u)x_{i_u i_v i_w}^u - y^u\sum_{i_u}B_{i_u}(y^u))(\sum_{i_v}B_{i_v}(y^v)x_{i_u i_v i_w}^v - y^v\sum_{i_v}B_{i_v}(y^v))
+    \end{split}
+\end{equation}
+
+这里我们注意到B-样条基函数的单位分解性$\sum_i B_i(x) = 1$以及线性还原性$\sum_i x_iB_i(x) = x$，带入到
+(3.13)式中我们有
+$$\sum_{i_w}B_{i_w}(y^w)(\sum_{i_u}B_{i_u}(y^u)x_{i_u i_v i_w}^u - y^u\sum_{i_u}B_{i_u}(y^u))(\sum_{i_v}B_{i_v}(y^v)x_{i_u i_v i_w}^v - y^v\sum_{i_v}B_{i_v}(y^v)) = 0$$
+因此$u\neq v\text{时}A_{uv} = 0$，即$A$为对角阵。
+
+接下来考察$u = v$时$A_{uv}$的值，而
+\begin{equation}
+    \begin{split}
+        A_{uu} &= \sum_{i_1 i_2 i_3} B_{i_1 i_2 i_3}(y) (x_{i_1 i_2 i_3}^u - y^u)^2\\
+            &= \sum_{i_u i_v i_w} B_{i_u}(y^u)B_{i_v}(y^v)B_{i_w}(y^w)(x_{i_1 i_2 i_3}^u - y^u)^2\\
+            &= \sum_{i_u} B_{i_u}(y^u) (x_{i_1 i_2 i_3}^u - y^u)^2 \sum_{i_v}B_{i_v}(y^v)\sum_{i_v}B_{i_w}(y^w)\\
+            &= \sum_{i_u} B_{i_u}(y^u) (x_{i_1 i_2 i_3}^u - y^u)^2\\ 
+    \end{split}
+\end{equation}
+接下来我们仔细的计算$B_{i_u}(y^u)$，其中紧支集包含$y^u$的基函数如图\ref{fig:affected basis}所示。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=1.0]{./images/image10.png}
+    \caption{$B_{j_0}(y^u), B_{j_1}(y^u), B_{j_2}(y^u)$为紧支集覆盖$y^u$的基函数，最左端为$j_0$，与$y^u$距离为$d$}
+    \label{fig:affected basis}
+\end{figure}
+
+
 
