@@ -210,7 +210,6 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 说明里所需的额外内存可以借用物质点法中的数据结构完成，也就是说LSIPIA的优势为可复用物质点法的数据结构，同时可以高度并行。
 
 [***************************补充实验数据****************************]
->>>>>>> 8cef0dafae3876eb7e8982e1b555e85f17437f13
 \begin{algorithm}
     \caption{LSIPIA}
     \label{alg:LSIPIA}
@@ -284,7 +283,12 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 $\nabla B_{ijk}(x)$时每一个维度需要单独的计算。基于这些缺点，我们提出另一个近似法向的计算方法。这里我们使用移动加权最小二乘来逼近格点系数，我们将会看到在
 格点张量积B-样条基下，移动加权最小二乘将有惊人的简单形式。
 
-我们寻求的近似目标函数为$f_y (x;c) = f(y) + c^T(x - y)$，能量函数设计如下
+我们寻求的近似目标函数为
+\begin{equation}
+    f_y (x;c) = f(y) + c^T(x - y)    
+\end{equation}
+
+能量函数设计如下
 \begin{equation}
     \begin{split}
         E_y(c) = \frac{1}{2} \sum_{ijk} B_{ijk}(y)(f_y(x_{ijk};c) - C_{ijk})^2
@@ -331,13 +335,43 @@ $$\sum_{i_w}B_{i_w}(y^w)(\sum_{i_u}B_{i_u}(y^u)x_{i_u i_v i_w}^u - y^u\sum_{i_u}
             &= \sum_{i_u} B_{i_u}(y^u) (x_{i_1 i_2 i_3}^u - y^u)^2\\ 
     \end{split}
 \end{equation}
-接下来我们仔细的计算$B_{i_u}(y^u)$，其中紧支集包含$y^u$的基函数如图\ref{fig:affected basis}所示。
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[scale=1.0]{./images/image10.png}
-    \caption{$B_{j_0}(y^u), B_{j_1}(y^u), B_{j_2}(y^u)$为紧支集覆盖$y^u$的基函数，最左端为$j_0$，与$y^u$距离为$d$}
-    \label{fig:affected basis}
-\end{figure}
+我们将说明$\sum_{i_u} B_{i_u}(y^u)(x_{i_1i_2i_3}^u - y^u)$恒为常数。这里我们注意到均匀n阶B-样条导数公式为$\frac{d}{dy} B_i^n(y) = B_i^{n-1}(y+\frac{1}{2}) - B_i^{n-1}(y - \frac{1}{2})$,
+此处假定样条阶数为$n$,同时再记$B_{i_u}(y^u)$为$B_{i_u}^n(y^u)$，现在考察$\sum_{i_u} B_{i_u}(y^u)(x_{i_1i_2i_3}^u - y^u)$导数
+\begin{equation}
+    \begin{split}
+        &\frac{d}{dy^u}\sum_{i_u} B_{i_u}^n(y^u) (x_{i_1 i_2 i_3}^u - y^u)^2\\ 
+        &= \sum_{i_u} \frac{d}{dy^u} B_{i_u}^n(y^u) (x_{i_1 i_2 i_3}^u - y^u)^2\\
+        &= \sum_{i_u} [\frac{d}{dy^u} B_{i_u}^n(y^u)] (x_{i_1 i_2 i_3}^u - y^u)^2 + B_{i_u}^n(y^u)\frac{d}{dy^u}[(x_{i_1 i_2 i_3}^u - y^u)^2]\\
+        &= \sum_{i_u} [\frac{d}{dy^u} B_{i_u}^n(y^u)] (x_{i_1 i_2 i_3}^u - y^u)^2 + 2B_{i_u}^n(y^u)(y^u - x_{i_1i_2i_3}^u)\\
+        &= \sum_{i_u} [\frac{d}{dy^u} B_{i_u}^n(y^u)] (x_{i_1 i_2 i_3}^u - y^u)^2\\
+        &= \sum_{i_u} (B_{i_u}^{n-1}(y^u + \frac{h}{2}) - B_{i_u}^{n-1}(y^u - \frac{h}{2})) (x_{i_1 i_2 i_3}^u - y^u)^2\\
+        &= \sum_{i_u} B_{i_u}^{n-1}(y^u + \frac{h}{2}) (y^u - x_{i_1 i_2 i_3}^u)^2 - \sum_{i_u}B_{i_u}^{n-1}(y^u - \frac{h}{2}) (y^u - x_{i_1 i_2 i_3}^u)^2\\   
+        &= \sum_{i_u} B_{i_u}^{n-1}(y^u + \frac{h}{2}) (y^u + \frac{h}{2} - x_{i_1 i_2 i_3}^u - \frac{h}{2})^2 -  \sum_{i_u} B_{i_u}^{n-1}(y^u - \frac{h}{2}) (y^u - \frac{h}{2} - x_{i_1 i_2 i_3}^u + \frac{h}{2})^2\\   
+        &= \sum_{i_u} B_{i_u}^{n-1}(y^u + \frac{h}{2}) [(y^u + \frac{h}{2} - x_{i_1 i_2 i_3}^u)^2 + \frac{h^2}{4} - h(y^u + \frac{h}{2} - x_{i_1 i_2 i_3}^u)] \\
+        &- \sum_{i_u} B_{i_u}^{n-1}(y^u - \frac{h}{2}) [(y^u - \frac{h}{2} - x_{i_1 i_2 i_3}^u)^2 + \frac{h^2}{4} + h(y^u - \frac{h}{2} - x_{i_1 i_2 i_3}^u)]\\
+        &= \{[\sum_{i_u} B_{i_u}^{n-1}(y^u + \frac{h}{2}) (y^u + \frac{h}{2} - x_{i_1 i_2 i_3}^u)^2] + \frac{h^2}{4} - h\sum_{i_u}B_{i_u}^{n-1}(y^u + \frac{h}{2})(y^u + \frac{h}{2} - x_{i_1 i_2 i_3}^u)\}\\
+        &- \{[\sum_{i_u} B_{i_u}^{n-1}(y^u - \frac{h}{2}) (y^u - \frac{h}{2} - x_{i_1 i_2 i_3}^u)^2] + \frac{h^2}{4} - h\sum_{i_u}B_{i_u}^{n-1}(y^u - \frac{h}{2})(y^u - \frac{h}{2} - x_{i_1 i_2 i_3}^u)\}\\
+        &= \{[\sum_{i_u} B_{i_u}^{n-1}(a) (a - x_{i_1 i_2 i_3}^u)^2]  - h\sum_{i_u}B_{i_u}^{n-1}(a)(a - x_{i_1 i_2 i_3}^u)\}\\
+        &- \{[\sum_{i_u} B_{i_u}^{n-1}(a - h) (a - h - x_{i_1 i_2 i_3}^u)^2] - h\sum_{i_u}B_{i_u}^{n-1}(a - h)(a - h - x_{i_1 i_2 i_3}^u) \}\\
+        &= \sum_{i_u} B_{i_u}^{n-1}(a) (a - x_{i_1 i_2 i_3}^u)^2 - \sum_{i_u} B_{i_u}^{n-1}(a - h) (a - h - x_{i_1 i_2 i_3}^u)^2\\
+        &= 0 \\
+    \end{split}
+\end{equation}
+
+从式(3.15)的推导中可以看出，其导数恒为0，因此$A_{uu} = \sum_{i_u} B_{i_u}^n(y^u) (x_{i_1 i_2 i_3}^u - y^u)^2$恒为常数。事实上，在本文中，
+B样条阶数为2，可以计算得到$A_{uu} = \frac{h^2}{4}$，因此$A = \frac{h^2}{4}I$，代入到(3.12)式中我们有如下
+\begin{equation}
+    \begin{split}
+        c = \frac{4}{h^2}\sum_{ijk}B_{ijk}(y)(C_{ijk} - f(y))(x_{ijk} - y)
+    \end{split}
+\end{equation}
+\begin{equation}
+    \begin{split}
+        f_y(x;c) = f(y) + \frac{4}{h^2}\sum_{ijk}B_{ijk}(y)(C_{ijk} - f(y))(x_{ijk} - y)^T(x - y)
+    \end{split}
+\end{equation}
+故近似法向选取为$n = \frac{c}{\Vert c\Vert}$。可以发现，在计算$c$时，我们只要计算$B_i(x^r), i \in \{0,1,2\}$
+
 
 
 
