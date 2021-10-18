@@ -209,7 +209,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 我们可以发现\textbf{Algorithm \ref{alg:LSIPIA}}在第4行，第15行，第22行对应的循环可高度并行。同时需要的额外内存为储存在每个格点$\mathcal{G}$上的$C_{ijk}$，$\lambda_{ijk}$，$\Delta_{ijk}$。而这一点，我们将在下一节中
 说明里所需的额外内存可以借用物质点法中的数据结构完成，也就是说LSIPIA的优势为可复用物质点法的数据结构，同时可以高度并行。
 
-[***************************补充实验数据****************************]
+[***************************补充实验数据说明速度快****************************]
 \begin{algorithm}
     \caption{LSIPIA}
     \label{alg:LSIPIA}
@@ -276,7 +276,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
     \begin{split}
         \nabla f &= \sum_{ijk} C_{ijk} \nabla B_{ijk}(x)\\
         &= \sum_{ijk} C_{ijk} \nabla (B_i(x^1)B_j(x^2)B_k(x^3))\\
-        &= \sum_{ijk} C_{ijk} (\partial_1 B_i(x^1) \cdot B_j(x^2)B_k(x^3), B_i(x^1)\partial_2 B_j(x^2)\cdot B_k(x^3), B_i(x^1)B_j(x^2)\partial_3B_k(x^3))\\
+        &= \sum_{ijk} C_{ijk} (\partial_i B_i(x^1) \cdot B_j(x^2)B_k(x^3), B_i(x^1)\partial_2 B_j(x^2)\cdot B_k(x^3), B_i(x^1)B_j(x^2)\partial_3B_k(x^3))\\
     \end{split}
 \end{equation}
 可以发现要计算$x$点的梯度$\nabla f$, 我们需要计算的有$B_i(x^r),\partial_r B_i(x^r), i \in \{0,1,2\}, r \in \{1,2,3\}$,其中样条阶数越高，计算$\partial_r B_i(x^r)$代价越大，并且$\partial_r B_i(x^r)$为分段函数,故在不同的$r$之间不可能做到单指令多数据流并行，同样在拼装
@@ -359,7 +359,7 @@ $$\sum_{i_w}B_{i_w}(y^w)(\sum_{i_u}B_{i_u}(y^u)x_{i_u i_v i_w}^u - y^u\sum_{i_u}
 \end{equation}
 
 从式(3.15)的推导中可以看出，其导数恒为0，因此$A_{uu} = \sum_{i_u} B_{i_u}^n(y^u) (x_{i_1 i_2 i_3}^u - y^u)^2$恒为常数。事实上，在本文中，
-B样条阶数为2，可以计算得到$A_{uu} = \frac{h^2}{4}$，因此$A = \frac{h^2}{4}I$，代入到(3.12)式中我们有如下
+B-样条阶数为2，可以计算得到$A_{uu} = \frac{h^2}{4}$，因此$A = \frac{h^2}{4}I$，代入到(3.12)式中我们有如下
 \begin{equation}
     \begin{split}
         c = \frac{4}{h^2}\sum_{ijk}B_{ijk}(y)(C_{ijk} - f(y))(x_{ijk} - y)
@@ -370,8 +370,18 @@ B样条阶数为2，可以计算得到$A_{uu} = \frac{h^2}{4}$，因此$A = \fra
         f_y(x;c) = f(y) + \frac{4}{h^2}\sum_{ijk}B_{ijk}(y)(C_{ijk} - f(y))(x_{ijk} - y)^T(x - y)
     \end{split}
 \end{equation}
-故近似法向选取为$n = \frac{c}{\Vert c\Vert}$。可以发现，在计算$c$时，我们只要计算$B_i(x^r), i \in \{0,1,2\}$
+故近似法向选取为$n = \frac{c}{\Vert c\Vert}$。可以发现，在计算$c$时，我们只要预计算$B_{i}(y^u), i,u \in \{1,2,3\}$，在组合法向时
+计算标量值$C_{ijk} - f(y)$，同时向量值$x_{ijk} - y$的计算远比$(\partial_i B_i(x^1) \cdot B_j(x^2)B_k(x^3), B_i(x^1)\partial_2 B_j(x^2)\cdot B_k(x^3), B_i(x^1)B_j(x^2)\partial_3B_k(x^3))$计算
+有更高的效率。
 
+【**********************补图说明估计的很好********************】
+\section{本章小结}
+本章给出了点云表面重建的方法，首先我们建立了点云的距离场，并使用合适的阙值$r$探查点云大致轮廓，
+并使用Marching cube算法来构造一阶连续曲面。为了得到更光滑的结果来获得更光滑的法向，
+本文使用LSIPIA方法处理，而实际上我们看到LSIPIA需要粒子上的法向作为输入，而实际上该法向仅仅是为了LSIPIA算法
+陷入平凡解，因此我们只需要估计出大致方向作为输入即可，其估计大致法向的办法
+将在下一节给出。在得到一个二阶光滑曲面之后，我们将基于此来计算法向，当然这个法向至少是一阶连续的，为了更少的计算代价，
+我们结合B-样条基函数的特性，使用移动最小二乘方法给出了一个相比于直接计算梯度更高效的估计办法。
 
 
 
