@@ -3,9 +3,26 @@
 在前文给出连续的控制方程，以及表面重建方法后，本章将离散化连续控制方程，以及针对
 流体表面张力给出一个物质的离散化方式，同时给出一个计算流水线将表面重建方法整合到物质点法中来完成我们的模拟。
 \section{离散控制方程}
-我们将使用伽辽金方法离散化控制方程，首先我们先将第一章中的动量强形式方程转换成弱形式。然后根据弱形式选取基函数以及
-对应的离散方法用于数值计算。
+我们将使用伽辽金方法离散化控制方程，首先我们先将第一章中的动量强形式方程转换成弱形式，然后根据弱形式选取基函数以及
+对应的离散方法用于数值计算。此处我们回顾动量守恒方程的欧拉形式和拉格朗日形式，
+\begin{align*}    
+    &\rho \frac{Dv}{Dt} = div(\sigma) + \rho g & \text{欧拉视角}\\
+    &R(X,0)\frac{\partial}{\partial t} V(X,t) = DIV(P) + Rg &\text{拉格朗日视角}
+\end{align*}
+其中$v(x,t) = V(X,t), x = \phi(X,t)$。如果我们从拉格朗日视角来观察方程的左侧(时间变化项)，从欧拉视角来观察方程的右侧(空间变化项)，
+那么我们有如下混合欧拉拉格朗日形式的方程
+\begin{align*}
+    &R(X,0)\frac{\partial}{\partial t} V(X,t) = div(\sigma) + \rho g & \text{混合欧拉拉格朗日视角}\\ 
+\end{align*}
 \subsection{时间离散化}
+在混合欧拉拉格朗日视角中，左端项为$R(X,0)\frac{\partial}{\partial t}V(X,t)$，相对于欧拉视角下$\rho \frac{Dv}{Dt}$中的材料时间导数
+$\frac{D}{Dt} = \frac{\partial}{\partial t} + v\cdot \nabla$，显然有更容易的离散方式，这也是时间变化项选择拉格朗日描述的原因。
+此处我们使用有限差分来离散速度有关时间的变化。
+\begin{align*}
+    \frac{\partial}{\partial t} V(X,t) \approx \frac{V(X,t^{n+1}) - V(X,t^n)}{\Delta t}
+\end{align*}
+
+同样的，在拉格朗日视角下的离散化可以转换为欧拉视角下的离散化，这里记$x^{n} = \phi_{t^n}(X)$, $\hat{x}^{n+1} = \phi_{t^{n+1},t^n}(x)$
 \subsection{弱形式}
 \subsection{数据表示与储存}
 
