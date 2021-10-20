@@ -22,8 +22,42 @@ $\frac{D}{Dt} = \frac{\partial}{\partial t} + v\cdot \nabla$，显然有更容�
     \frac{\partial}{\partial t} V(X,t) \approx \frac{V(X,t^{n+1}) - V(X,t^n)}{\Delta t}
 \end{align*}
 
-同样的，在拉格朗日视角下的离散化可以转换为欧拉视角下的离散化，这里记$x^{n} = \phi_{t^n}(X)$, $\hat{x}^{n+1} = \phi_{t^{n+1},t^n}(x)$
+同样的，在拉格朗日视角下的离散化可以转换为欧拉视角下的离散化，这里记$x^{n} := \phi_{t^n}(X)$, $\hat{x}^{n+1} := \phi_{t^{n+1},t^n}(x^n)$，同时
+$v^n(x^n) := v(x^n,t^n), \hat{v}^{n+1}(x^n) := v(\phi_{t^{n+1},t^n}(x^n))$，因此以上差分格式可以写成
+\begin{align*}
+    \frac{\partial}{\partial t} V(X,t) \approx \frac{\hat{v}^{n+1}(x^n) - v^n(x^n)}{\Delta t}
+\end{align*}
+值得注意的是，$\hat{v}^{n+1}(x^n)$与$v^n(x^n)$都是在$\Omega^{t^n} = \phi_{t^n}(\Omega^0)$上定义的，因此该离散形式既可在欧拉视角下表示，同时也可以在
+拉格朗日视角下表示。
 \subsection{弱形式}
+将左端形式带入欧拉视角中，我们有如下
+\begin{align*}
+    \rho(x^n,t^n)\frac{\hat{v}^{n+1}(x^n) - v^n(x^n)}{\Delta t} = div(\sigma) + \rho g
+\end{align*}
+为了将表面张力融入方程中，我们补充边界条件如下
+\begin{align*}
+    \rho(x^n,t^n)\frac{\hat{v}^{n+1}(x^n) - v^n(x^n)}{\Delta t} &= div(\sigma) + \rho g \\
+    \sigma n &= t, x^n \in \partial \Omega^{t^n}\\
+\end{align*}
+上述方程以弱形式表示我们有
+\begin{align*}
+    \int_{\Omega^{t^n}}\rho(x^n,t^n)\frac{\hat{v}^{n+1}(x^n) - v^n(x^n)}{\Delta t}\cdot wdx &= \int_{\Omega^{t^n}} div(\sigma)\cdot w dx + \int_{\Omega^{t^n}}\rho g\cdot w dx\\
+    \sigma n &= t, x^n \in \partial \Omega^{t^n}\\   
+\end{align*}
+现在我们处理右端的散度项，由格林公式[**]得
+\begin{align*}
+    \int_{\Omega^{t^n}} div(\sigma)\cdot w dx &= \int_{\partial \Omega^{t^n}}w\cdot (\sigma n) ds - \int_{\Omega^{t^n}} \sigma : \nabla w dx\\
+        &= \int_{\partial \Omega^{t^n}}w\cdot t ds - \int_{\Omega^{t^n}} \sigma :\nabla w dx
+\end{align*}
+我们先计算$\int_{\partial \Omega^{t^n}}\sigma : \nabla w dx$部分。回顾流体弱可压缩模型获得的柯西应力$$\sigma = \lambda (det(F) - 1)I$$带入可得
+$\int_{\partial \Omega^{t^n}} \lambda (det(F) - 1) I:\nabla w dx$。
+将上式整合我们得到
+\begin{align*}
+    \int_{\Omega^{t^n}}\rho(x^n,t^n)\frac{\hat{v}^{n+1}(x^n) - v^n(x^n)}{\Delta t}\cdot wdx &= \int_{\partial \Omega^{t^n}} w\cdot t ds - \int_{\Omega^{t^n}} \sigma:\nabla w dx
+\end{align*}
+为了计算表面张力项，回顾我们在第一章得到的表面张力计算公式
+$$S(\phi_{t}) = k \int_{\partial \Omega_{t^n}} det(F(x;t,t^{n})) \Vert F^{-T}(x;t,t^{n})\tilde{n}\Vert d\tilde{s}$$
+
 \subsection{数据表示与储存}
 
 \section{计算流水线}

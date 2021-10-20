@@ -370,7 +370,7 @@ B-样条阶数为2，可以计算得到$A_{uu} = \frac{h^2}{4}$，因此$A = \fr
         f_y(x;c) = f(y) + \frac{4}{h^2}\sum_{ijk}B_{ijk}(y)(C_{ijk} - f(y))(x_{ijk} - y)^T(x - y)
     \end{split}
 \end{equation}
-故近似法向选取为$n = \frac{c}{\Vert c\Vert}$。可以发现，在计算$c$时，我们只要预计算$B_{i}(y^u), i,u \in \{1,2,3\}$，在组合法向时
+故近似法向选取为$n = \frac{c}{\Vert c\Vert}$。可以发现，在计算$c$时，我们只要预计算$B_{i}(y^u), i,u \in \{1,2,3\}$，这表明该算法有着更低的内存消耗，在组合法向时
 计算标量值$C_{ijk} - f(y)$，同时向量值$x_{ijk} - y$的计算远比$(\partial_i B_i(x^1) \cdot B_j(x^2)B_k(x^3), B_i(x^1)\partial_2 B_j(x^2)\cdot B_k(x^3), B_i(x^1)B_j(x^2)\partial_3B_k(x^3))$计算
 有更高的效率。
 

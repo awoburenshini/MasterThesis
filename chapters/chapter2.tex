@@ -223,7 +223,7 @@ $$J\sigma = PF^{T}$$
 这里的$W(F)$实际上只给出了物体的抗压缩性的性质，我们还需要给出表面张力的能量密度函数。根据[**]，表面能实际和物体表面积成正比，表面张力为表面能的梯度。那么我们首先可以
 形变和表面能量的关系
 \begin{equation}
-    S(\phi_t) = k\int_{\phi_t (\Omega_0)} ds
+    S(\phi_t) = k\int_{\phi_t (\partial \Omega_0)} ds
 \end{equation}
 为了更好的计算其梯度，我们对(2.10)式做一些处理。此处引入一些微分流形的记号[**]，记$f^*$为$f$导出的拉回映射，$f_*$为推前映射，$ds,d\tilde{s}$分别为曲面$\partial \Omega_{t_0}, \partial \Omega_{t}$上的面积二形式，其为空间体积形式$dv$内乘法向的结果，
 即$ds(X,Y) = dv(n,X,Y)$,我们记$ds = dv\odot n$，$ \tilde{p} = \phi_{t_0,t}(p)$,则对任意的$t \in[0, t_0),\tilde{X},\tilde{Y}\in T_{\tilde{p}}\Omega_t$有如下
@@ -242,17 +242,17 @@ $$(\phi_{t_0,t}^*ds) = det(F(x;t_0,t)) \Vert F^{-T}(x;t_0,t)\tilde{n}\Vert d\til
 则代入表面能表达式有
 \begin{equation}
     \begin{split}
-        S(\phi_{t_0}) &= k  \int_{\Omega_{t_0}}ds\\
-        &= k \int_{\phi_{t_0,t}(\Omega_{t})} ds\\
-        &= k \int_{\Omega_t}  \phi_{t_0,t}^* ds\\
-        &= k \int_{\Omega_t} det(F(x;t_0,t)) \Vert F^{-T}(x;t_0,t)\tilde{n}\Vert d\tilde{s}\nonumber\\
+        S(\phi_{t_0}) &= k  \int_{\partial\Omega_{t_0}}ds\\
+        &= k \int_{\phi_{t_0,t}(\partial\Omega_{t})} ds\\
+        &= k \int_{\partial \Omega_t}  \phi_{t_0,t}^* ds\\
+        &= k \int_{\partial \Omega_t} det(F(x;t_0,t)) \Vert F^{-T}(x;t_0,t)\tilde{n}\Vert d\tilde{s}\nonumber\\
     \end{split}
 \end{equation}
 
 至此，我们得到表面能的另一个表达形式
 \begin{equation}
     \begin{split}
-        S(\phi_{t_0}) = k \int_{\Omega_t} det(F(x;t_0,t)) \Vert F^{-T}(x;t_0,t)\tilde{n}\Vert d\tilde{s}
+        S(\phi_{t_0}) = k \int_{\partial \Omega_t} det(F(x;t_0,t)) \Vert F^{-T}(x;t_0,t)\tilde{n}\Vert d\tilde{s}
     \end{split}
 \end{equation}
 (2.21)式将是表面张力离散化的基础。
@@ -287,7 +287,7 @@ $$(\phi_{t_0,t}^*ds) = det(F(x;t_0,t)) \Vert F^{-T}(x;t_0,t)\tilde{n}\Vert d\til
 该方程将会在物质点法如何获得下一时刻的形变梯度中起到关键作用。最后，
 我们给出了弱可压缩能量$W(F)=\lambda (J-1)^2$来刻画流体的特性，该能量也给出了First Piola–Kirchhoff应力和Cauthy应力的计算方式。
 其次我们给出了表面能的计算方法
-$$S(\phi_{t_0}) = k \int_{\Omega_{t_1}} det(F(x;t_0,t_1)) \Vert F^{-T}(x;t_0,t_1)\tilde{n}\Vert d\tilde{s}$$
+$$S(\phi_{t_0}) = k \int_{\partial \Omega_{t_1}} det(F(x;t_0,t_1)) \Vert F^{-T}(x;t_0,t_1)\tilde{n}\Vert d\tilde{s}$$
 该计算形式下，积分域不随着$\phi_{t_0}$变化而变化，为我们离散计算以及变分都带来了便利，而表面张力将由表面能变分获得，这一步我们将在离散化的过程中来计算。
 
 
