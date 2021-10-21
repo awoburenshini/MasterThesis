@@ -39,7 +39,7 @@ $v^n(x^n) := v(x^n,t^n), \hat{v}^{n+1}(x^n) := v(\phi_{t^{n+1},t^n}(x^n))$，因
     \rho(x^n,t^n)\frac{\hat{v}^{n+1}(x^n) - v^n(x^n)}{\Delta t} &= div(\sigma) + \rho g \\
     \sigma n &= t, x^n \in \partial \Omega^{t^n}\\
 \end{align*}
-上述方程以弱形式表示我们有
+上述方程以弱形式表示我们有，这里$w$选取为空间上具有紧支集的测试函数
 \begin{align*}
     \int_{\Omega^{t^n}}\rho(x^n,t^n)\frac{\hat{v}^{n+1}(x^n) - v^n(x^n)}{\Delta t}\cdot wdx &= \int_{\Omega^{t^n}} div(\sigma)\cdot w dx + \int_{\Omega^{t^n}}\rho g\cdot w dx\\
     \sigma n &= t, x^n \in \partial \Omega^{t^n}\\   
@@ -57,7 +57,39 @@ $\int_{\partial \Omega^{t^n}} \lambda (det(F) - 1) I:\nabla w dx$。
 \end{align*}
 为了计算表面张力项，回顾我们在第一章得到的表面张力计算公式
 $$S(\phi_{t}) = k \int_{\partial \Omega_{t^n}} det(F(x;t,t^{n})) \Vert F^{-T}(x;t,t^{n})\tilde{n}\Vert d\tilde{s}$$
-
+我们对其变分将获得流体表面上的表面张力场。为了方便，我们先记$\tilde{F} = F(x;t,t^n)$,以及$\Psi(\tilde{F}) = det(\tilde{F})\Vert \tilde{F}^{-T}\tilde{n} \Vert$,则
+\begin{align}
+    \delta \Psi(\tilde{F}) &= \delta(det(\tilde{F})\Vert \tilde{F}^{-T}\tilde{n} \Vert) \nonumber\\
+    &= \delta[det(\tilde{F})] \Vert \tilde{F}^{-T} \tilde{n} \Vert + det(\tilde{F})\delta \Vert \tilde{F}^{-T}\tilde{n} \Vert \nonumber\\
+    &= det(\tilde{F})\tilde{F}^{-T}:\delta \tilde{F} \cdot \Vert \tilde{F}^{-T}\tilde{n}\Vert + det(\tilde{F})\delta \Vert \tilde{F}^{-T} \tilde{n} \Vert
+\end{align}
+这里第三行我们使用了第二章提到的行列式求导结果$\delta det(F) = det(F)F^{-T}:\delta F$，接下来我们处理上述等式的右端项
+$\delta \Vert \tilde{F}^{-T}\tilde{n}\Vert$。这里注意到$\Vert V \Vert^2 = V^TV$，因此我们有$2\Vert V\Vert \delta \Vert V \Vert = 2V^T\delta V$。
+同时$A^{-1}A = I$，从这里我们由$\delta A^{-1} A + A^{-1}\delta A = 0$,整理得到$\delta (A^{-1}) = - A^{-1}\delta A A^{-1}$。那么我们由
+\begin{align*}
+    \delta \Vert \tilde{F}^{-T}\tilde{n}\Vert &= \frac{\tilde{n}^{T}\delta(\tilde{F}^{-1})\tilde{F}^{-T}\tilde{n}}{\Vert \tilde{F}^{-T}\tilde{n}\Vert}\\
+    &= \frac{-\tilde{n}\tilde{F}^{-1}(\delta \tilde{F})\tilde{F}^{-1}\tilde{F}^{-T}\tilde{n}}{\Vert \tilde{F}^{-T}\tilde{n} \Vert}
+\end{align*}
+将上式带入(4.1)式得
+\begin{align*}
+    \delta \Psi(\tilde{F}) = det(\tilde{F})\tilde{F}^{-T}:\delta \tilde{F} \cdot \Vert \tilde{F}^{-T}\tilde{n}\Vert - \frac{\tilde{n}^T\tilde{F}^{-1}(\delta \tilde{F})\tilde{F}^{-1}\tilde{F}^{-T}\tilde{n}}{\Vert \tilde{F}^{-T}\tilde{n} \Vert}
+\end{align*}
+则
+\begin{align*}
+    \delta \Psi (F(x_0;t_0,t_0)) &= \delta \Psi(I)\\ 
+    &= I:\delta \tilde{F} - \tilde{n}^T\delta \tilde{F} \tilde{n}\\
+    &= I:\delta \tilde{F} - \tilde{n}\tilde{n}^T:\delta \tilde{F}\\
+    &= (I - \tilde{n}\tilde{n}^T):\delta \tilde{F}
+\end{align*}
+而表面能量变化等于表面张力沿位移做的功，这里$\delta \phi_{t^n} (X) = w\circ\phi_{t^n}(X)$，即
+$$\delta S(\phi_{t^n}) = \int_{\partial \Omega^{t^n}} w\cdot t ds$$
+因此我们有
+\begin{align*}
+    \int_{\partial \Omega^{t^n}} w\cdot t ds &= \delta S(\phi_{t^n})\\
+    &= \int_{\partial \Omega^{t^n}} (I - \tilde{n}\tilde{n}^{T}):\delta \tilde{F}ds\\
+    &= \int_{\partial \Omega^{t^n}} (I - \tilde{n}\tilde{n}^{T}):\nabla w ds\\
+    &= \int
+\end{align*}
 \subsection{数据表示与储存}
 
 \section{计算流水线}
@@ -65,4 +97,5 @@ $$S(\phi_{t}) = k \int_{\partial \Omega_{t^n}} det(F(x;t,t^{n})) \Vert F^{-T}(x;
 \subsection{Grid Operation}
 \subsection{碰撞处理}
 \subsection{G2P}
+\subsection{实验结果}
 
