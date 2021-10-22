@@ -41,8 +41,8 @@ $v^n(x^n) := v(x^n,t^n), \hat{v}^{n+1}(x^n) := v(\phi_{t^{n+1},t^n}(x^n))$，因
 \end{align*}
 上述方程以弱形式表示我们有，这里$w$选取为空间上具有紧支集的测试函数
 \begin{align*}
-    \int_{\Omega^{t^n}}\rho(x^n,t^n)\frac{\hat{v}^{n+1}(x^n) - v^n(x^n)}{\Delta t}\cdot wdx &= \int_{\Omega^{t^n}} div(\sigma)\cdot w dx + \int_{\Omega^{t^n}}\rho g\cdot w dx\\
-    \sigma n &= t, x^n \in \partial \Omega^{t^n}\\   
+    \int_{\Omega^{t^n}}\rho(x,t^n)\frac{\hat{v}^{n+1}(x) - v^n(x)}{\Delta t}\cdot wdx &= \int_{\Omega^{t^n}} div(\sigma)\cdot w dx + \int_{\Omega^{t^n}}\rho g\cdot w dx\\
+    \sigma n &= t, x \in \partial \Omega^{t^n}\\   
 \end{align*}
 现在我们处理右端的散度项，由格林公式[**]得
 \begin{align*}
@@ -53,7 +53,7 @@ $v^n(x^n) := v(x^n,t^n), \hat{v}^{n+1}(x^n) := v(\phi_{t^{n+1},t^n}(x^n))$，因
 $\int_{\partial \Omega^{t^n}} \lambda (det(F) - 1) I:\nabla w dx$。
 将上式整合我们得到
 \begin{align*}
-    \int_{\Omega^{t^n}}\rho(x^n,t^n)\frac{\hat{v}^{n+1}(x^n) - v^n(x^n)}{\Delta t}\cdot wdx &= \int_{\partial \Omega^{t^n}} w\cdot t ds - \int_{\Omega^{t^n}} \sigma:\nabla w dx
+    \int_{\Omega^{t^n}}\rho(x,t^n)\frac{\hat{v}^{n+1}(x) - v^n(x)}{\Delta t}\cdot wdx &= \int_{\partial \Omega^{t^n}} w\cdot t ds - \int_{\Omega^{t^n}} \sigma:\nabla w dx
 \end{align*}
 为了计算表面张力项，回顾我们在第一章得到的表面张力计算公式
 $$S(\phi_{t}) = k \int_{\partial \Omega_{t^n}} det(F(x;t,t^{n})) \Vert F^{-T}(x;t,t^{n})\tilde{n}\Vert d\tilde{s}$$
@@ -86,10 +86,77 @@ $$\delta S(\phi_{t^n}) = \int_{\partial \Omega^{t^n}} w\cdot t ds$$
 因此我们有
 \begin{align*}
     \int_{\partial \Omega^{t^n}} w\cdot t ds &= \delta S(\phi_{t^n})\\
-    &= \int_{\partial \Omega^{t^n}} (I - \tilde{n}\tilde{n}^{T}):\delta \tilde{F}ds\\
-    &= \int_{\partial \Omega^{t^n}} (I - \tilde{n}\tilde{n}^{T}):\nabla w ds\\
-    &= \int
+    &= k\int_{\partial \Omega^{t^n}} (I - \tilde{n}\tilde{n}^{T}):\delta \tilde{F}ds\\
+    &= k\int_{\partial \Omega^{t^n}} (I - \tilde{n}\tilde{n}^{T}):\nabla w ds\\
 \end{align*}
+
+因此我们可以得到
+\begin{align}
+    \int_{\Omega^{t^n}}\rho(x,t^n)\frac{\hat{v}^{n+1}(x) - v^n(x)}{\Delta t}\cdot wdx = &k\int_{\partial \Omega^{t^n}} (I - \tilde{n}\tilde{n}^T):\nabla w ds\nonumber\\
+    & -\int_{\Omega^{t^n}}\lambda (det(F\circ \phi_t^{-1}) - 1)I:\nabla w dx
+\end{align}
+\subsection{空间离散化}
+在得到(4.2)式后我们将积分离散化，首先我们假设$\Omega^{t^n}$被离散为点云$\mathcal{V}$，如图\ref{fig: discretise continuum}所示。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.8]{./images/image11.png}
+    \caption{连续体离散化成点云}
+    \label{fig: discretise continuum}
+\end{figure}
+
+其次假设有限元函数空间为$$\{f: f(x) = \sum_\mathbf{i} f_\mathbf{i} B_\mathbf{i}(x), \mathbf{i} = ijk, i,j,k\in{1,2,3}\}$$因此
+$\hat{v}^{n+1}(x) = \sum_{\mathbf{i}}\hat{v}^{n+1}_{\mathbf{i}}B_{\mathbf{i}}(x)$，$v^n(x) = \sum_{\mathbf{i}}v^n_{\textbf{i}}B_{\textbf{i}}(x)$，测试函数$w(x) = e_{\alpha}B_{\mathbf{i}}(x)$，这里$e_{\alpha}$为三维空间的第$\alpha\in\{1,2,3\}$个标准基。
+带入(4.2)式左边有
+\begin{align}
+    \int_{\Omega^{t^n}}\rho(x,t^n)\frac{\hat{v}^{n+1}(x) - v^n(x)}{\Delta t}\cdot w dx &=  \int_{\Omega^{t^n}} \rho(x,t^n)\sum_{\mathbf{i}}\frac{\hat{v}^{n+1}_\mathbf{i} - v^n_{\mathbf{i}}}{\Delta t}B_\mathbf{i}(x)\cdot e_{\alpha}B_{\mathbf{j}}(x)dx\nonumber
+\end{align}
+右边为
+\begin{align}
+    \int_{\partial \Omega^{t^n}} (I - \tilde{n}\tilde{n}^T):e_{\alpha}\nabla B_{\mathbf{j}}(x) ds - \int_{\Omega^{t^n}}\lambda (det(F\circ \phi_t^{-1}) - 1)I:e_{\alpha}\nabla B_\mathbf{j}(x) dx
+\end{align}
+如果我们同时考虑$e_{\alpha},\alpha = 1,2,3$，这样上式即在三个维度统一表示为
+\begin{align}
+    \int_{\Omega^{t^n}}\rho(x,t^n)\sum_\mathbf{i} \frac{\hat{v}^{n+1}_\mathbf{i} - v^n_{\mathbf{i}}}{\Delta t}B_\mathbf{i}(x)B_\mathbf{j}(x)dx &= \int_{\partial \Omega^{t^n}} (I - \tilde{n}\tilde{n}^T)\nabla B_{\mathbf{i}}(x)^T ds \nonumber\\
+                                                                            & - \int_{\Omega^{t^n}} \lambda (det(F\circ \phi_t^{-1}) - 1)\nabla B_\mathbf{i}(x)^T dx \nonumber     
+\end{align}
+对积分离散化我们有
+\begin{align}
+    \sum_\mathbf{i}\int_{\Omega^{t^n}}\rho(x,t^n) \frac{\hat{v}^{n+1}_\mathbf{i} - v^n_{\mathbf{i}}}{\Delta t}B_\mathbf{i}(x)B_\mathbf{j}(x)dx &\approx \sum_{\mathbf{i},p}B_\mathbf{i}(x_p^n)B_\mathbf{j}(x_p^n)\frac{\hat{v}^{n+1}_\mathbf{i} - v^n_{\mathbf{i}}}{\Delta t}\int_{\Omega^{t^n}_p}\rho(x,t)dx\nonumber\\
+    &= \sum_{\mathbf{i},p}B_\mathbf{i}(x_p^n)B_\mathbf{j}(x_p^n)\frac{\hat{v}^{n+1}_\mathbf{i} - v^n_{\mathbf{i}}}{\Delta t}m_p
+\end{align}
+此处$p\in \mathcal{V}$为离散点云上的点，$x_p^n\in \mathbb{R}^3$为$t^n$时刻点$p$的位置，$m_p = \int_{\Omega_p^{t^n}} \rho(x,t)dx$，这里$m_p$为粒子$p$周围的质量，根据质量守恒，$m_p$与时间无关。
+再记$\hat{M}_{\mathbf{j}\mathbf{i}} = \sum_p B_{\mathbf{j}}(x_p^n)B_{\mathbf{i}}(x_p^n)m_p$
+通常我们会牺牲精度，使用矩阵行求和的方式[**]来简化矩阵$\hat{M}$。即$M_{\mathbf{jj}} = \sum_{\mathbf{i}}\hat{M}_{\mathbf{ji}}$，$M$的非对角项为0。同时注意到，
+B-样条的单位分解性，我们有
+$$M_{\mathbf{jj}} = \sum_p m_p B_{\mathbf{j}}(x_p^n)\sum_\mathbf{i}B_\mathbf{i}(x_p^n) = \sum_p m_p B_{\mathbf{j}}(x_p^n)$$
+同理我们可以得到
+\begin{align}
+    \int_{\Omega^{t^n}}\lambda (det(F\circ \phi_t^{-1}) - 1)\nabla B_{\mathbf{j}}(x)^Tdx &\approx \sum_p \lambda (det(F_p^n) - 1)\nabla B_{\mathbf{j}}(x_p^n)^T\int_{\Omega^{t^n}_p}dx \nonumber\\
+    & = \sum_p \lambda (det(F_p^n) - 1)\nabla B_{\mathbf{j}}(x_p^n)^T V_p^n\nonumber \\
+    & \approx \sum_p \lambda (det(F_p^n) - 1)\nabla B_{\mathbf{j}}(x_p^n)^T V_p^0\nonumber     
+\end{align}
+这里$F_p^n$为粒子$p$在$t^n$时刻的形变梯度，$V_p^n$为时刻$t^n$时$p$邻域小块$\Omega_p^{t^n}$的体积，由于我们将使用较大的体积惩罚来减小体积变化，因此我们可以近似$V_p^n$为初始时刻的体积$V_p^0$。
+
+最后我们来处理表面积分项$\int_{\partial \Omega^{t^n}} (I - \tilde{n}\tilde{n}^T)\nabla B_{\mathbf{i}}(x)^T ds$，假定我们已经获取了点云在$t^n$时刻的表面，总表面积为$Area$，且已在表面上均匀的采点，每个点分配面积为$A_s = \frac{Area}{\#\mathcal{S}}$，表面点集为$\mathcal{S}$。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.4]{./images/image12.png}
+    \caption{红色点$s$为采样获得的表面点集$\mathcal{S}$}
+    \label{fig: surface of point cloud}
+\end{figure}
+
+那么我们有
+\begin{align}
+    \int_{\partial \Omega^{t^n}} (I - \tilde{n}\tilde{n}^T)\nabla B_{\mathbf{j}}(x)^T ds &\approx \sum_{s\in\mathcal{S}}(I - \tilde{n}_s\tilde{n}_s^T)\nabla B_{\mathbf{j}}(x_s^n)^TA_s
+\end{align}
+将上述离散化结果整理我们得到
+\begin{align}
+    \sum_{p\in \mathcal{V}} \frac{\hat{v}^{n+1}_\mathbf{j} - v^n_{\mathbf{j}}}{\Delta t}m_pB_{\mathbf{j}}(x_p^n) = &k\sum_{s\in\mathcal{S}}(I - \tilde{n}_s\tilde{n}_s^T)\nabla B_{\mathbf{j}}(x_s^n)^TA_s\nonumber\\
+    & - \lambda \sum_{p\in\mathcal{V}} (det(F_p^n) - 1)\nabla B_{\mathbf{j}}(x_p^n)^T V_p^0
+\end{align}
+
+
+
 \subsection{数据表示与储存}
 
 \section{计算流水线}
