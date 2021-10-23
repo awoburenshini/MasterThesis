@@ -154,15 +154,71 @@ $$M_{\mathbf{jj}} = \sum_p m_p B_{\mathbf{j}}(x_p^n)\sum_\mathbf{i}B_\mathbf{i}(
     \sum_{p\in \mathcal{V}} \frac{\hat{v}^{n+1}_\mathbf{j} - v^n_{\mathbf{j}}}{\Delta t}m_pB_{\mathbf{j}}(x_p^n) = &k\sum_{s\in\mathcal{S}}(I - \tilde{n}_s\tilde{n}_s^T)\nabla B_{\mathbf{j}}(x_s^n)^TA_s\nonumber\\
     & - \lambda \sum_{p\in\mathcal{V}} (det(F_p^n) - 1)\nabla B_{\mathbf{j}}(x_p^n)^T V_p^0
 \end{align}
-
-
+如果记$m_{\mathbf{j}}^n = \sum_p m_p B_{\mathbf{j}}(x_p^n)$，则上述问题变为
+\begin{align}
+    m_\mathbf{j}^n \frac{\hat{v}^{n+1}_\mathbf{j} - v^n_{\mathbf{j}}}{\Delta t} &= k\sum_{s\in \mathcal{S}}(I - \tilde{n}_s\tilde{n}_s^T)\nabla B_\mathbf{j}(x_s^n)^TA_s\nonumber\\
+    & - \lambda \sum_{p\in\mathcal{V}} (det(F_p^n) - 1)\nabla B_{\mathbf{j}}(x_p^n)^T 
+\end{align}
+自然我们给出$p$的位置$x_p^n$更新公式
+\begin{align}    
+    x_p^{n+1} = x_p^n + \Delta t \tilde{v}_p^{n+1}
+\end{align}
+同时回顾第二章的$\dot{F} = \nabla v \cdot F$，我们得到
+\begin{align}
+    F^{n+1}_p = (I + \Delta t\cdot \nabla \tilde{v}^{n+1})F^n_p
+\end{align}
 
 \subsection{数据表示与储存}
+从式(4.7)，(4.8)，(4.9)可以看到，我们需要的变量有$x_p^n\in \mathbb{R}^3,v_p^{n}\in \mathbb{R}^3,F_p^n\in \mathbb{R}^{3\times 3}$，这些变量我们都储存在粒子上，由于粒子上储存质量信息不会随着时间改变，因此该数据表示方式
+自然的满足了质量守恒方程。如图\ref{fig: particle information}所示
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.7]{./images/image13.png}
+    \caption{粒子上的信息}
+    \label{fig: particle information}
+\end{figure}
+
+同时注意到这里在$t^n$时刻需要参与计算的信息还有$v_\mathbf{j}^n \in \mathbb{R}^3$和$m_\mathbf{j}^n \in \mathbb{R}$，这里的信息我们储存在
+格点上。如图\ref{fig: grid information}所示，这里我们注意到$m_{\mathbf{j}}^n = \sum_p m_p B_{\mathbf{j}}(x_p^n)$，此处实际上我们把粒子上的
+数据分散到了网格上，同时注意到$\sum_{\mathbf{j}} m_\mathbf{j}^n = \sum_{\mathbf{j}}\sum_p m_p B_{\mathbf{j}}(x_p^n)$，这里再使用B-样条的单位分解性，我们有
+$\sum_{\mathbf{j}}m_\mathbf{j} = \sum_p m_p$，因此该分配方式依然是质量守恒的过程。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.7]{./images/image14.png}
+    \caption{格点上的信息}
+    \label{fig: grid information}
+\end{figure}
 
 \section{计算流水线}
-\subsection{P2G}
-\subsection{Grid Operation}
-\subsection{碰撞处理}
+在上一节得到连续方程的离散化之后，我们接下来给出该离散方程的计算策略以及一些工程实践上的修正。
+\subsection{表面重建与粒子属性调整}
+在给定的粒子集合$\mathcal{V}$以及$t^n$时刻每个粒子$p \in \mathcal{V}$的位置$x_p$时，我们可以使用第\ref{chap3}章
+提到的方法重建表面网格，然后使用泊松圆盘采样获取表面的粒子$\mathcal{S}$。在构造隐式曲面时，我们需要额外的偏移量，此
+处我们对每一个$s\in \mathcal{S}$，在$\mathcal{V}$中寻找距离$s$最近的粒子$p_s \in \mathcal{V}$,偏移方向
+为$n_s = \frac{x_s - x_{p_s}}{\Vert x_s - x_{p_s} \Vert}$，如图\ref{fig: offset of surface particle}所示。我们将
+$\mathcal{S}$和$\mathcal{N}$作为输入可以得到逼近的隐式曲面，然后估计$S$中表面粒子的法向。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.7]{./images/image15.png}
+    \caption{箭头为偏移方向，红色点为表面粒子$s\in \mathcal{S}$，箭头起始端为$p_s \in\mathcal{V}$}
+    \label{fig: offset of surface particle}
+\end{figure}
+
+\subsection{粒子信息到网格信息(P2G)}
+实际上在上一节中，我们已经给出了把粒子上的质量信息传递到网格上的计算公式，即$m^n_{\mathbf{j}} = \sum_p m_p B_{\mathbf{j}}(x_p^n)$，我们仍然需要
+的速度信息$v_\mathbf{j}^n$，基于动量守恒的考虑[**]，我们采用的传递方式为将粒子的动量信息传递到网格上，再通过动量和质量的关系获取网格上的速度，即
+\begin{align}
+    (mv)_\mathbf{j}^n &= \sum_{p} m_p v_p^nB_{\mathbf{j}}(x_p^n)\\
+    v_\mathbf{j}^n &= \frac{(mv)_\mathbf{j}^n}{m_{\mathbf{j}}^n} 
+\end{align}
+和质量守恒的证明方式类似，我们也可以说明该过程是动量守恒的。其中质量和动量的传递过程我们称之为粒子转网格(P2G)。
+\subsection{网格上力的计算(GOP)}
+网格上弱可压缩模型带来力的计算是明显的，即
+\begin{align}
+    f^{liquid}_{\mathbf{j}} = -\lambda \sum_p (det(F_p^n) - 1)\nabla B_{\mathbf{j}}^T(x_p^n)
+\end{align}
+
+
 \subsection{G2P}
 \subsection{实验结果}
 
