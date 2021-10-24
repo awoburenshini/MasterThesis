@@ -204,6 +204,16 @@ $\mathcal{S}$和$\mathcal{N}$作为输入可以得到逼近的隐式曲面，然
     \label{fig: offset of surface particle}
 \end{figure}
 
+在实践中，表面张力项$f^{surface} = k\sum_{s\in \mathcal{S}}(I - \tilde{n}_s\tilde{n}_s^T)\nabla B_{\mathbf{j}}(x_s^n)^TA_s$需要传导到内部粒子，与液体压力共同影响形变结果，如果表面粒子离内部粒子最短距离大于
+$\sqrt{3}h$(即在$s$所占的一个格子之外)，那么该表面粒子$s\in \mathcal{S}$将难以通过网格把表面张力传导到内部粒子。为了解决这一问题，我们对每一个表面粒子$s\in \mathcal{S}$寻找其在内部的最近的点$v_s \in \mathcal{V}$，
+然后生成一个嵌入点$o_s$，嵌入点$o_s$的位置我们选取为$x_{o_s} = 2x_{v_s} - x_s$，嵌入点集合我们记为$\mathcal{O}$。显然，$\mathcal{O}$与$\mathcal{S}$有一一对应关系，而内部点$v\in\mathcal{V}$与表面点集可能是多对一，因此我们记录每一个内部点
+$v$所相关的表面点个数$C_v$
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.7]{./images/image16.png}
+    \caption{红色点为表面粒子$s\in \mathcal{S}$，红色点通过虚线所连的蓝色点为离$s$最近的内部点$v_s\in \mathcal{V}$，橙色点$o_s\in \mathcal{O}$为新嵌入内部点}
+    \label{fig: surface particle inserted}
+\end{figure}
 \subsection{粒子信息到网格信息(P2G)}
 实际上在上一节中，我们已经给出了把粒子上的质量信息传递到网格上的计算公式，即$m^n_{\mathbf{j}} = \sum_p m_p B_{\mathbf{j}}(x_p^n)$，我们仍然需要
 的速度信息$v_\mathbf{j}^n$，基于动量守恒的考虑[**]，我们采用的传递方式为将粒子的动量信息传递到网格上，再通过动量和质量的关系获取网格上的速度，即
@@ -213,7 +223,7 @@ $\mathcal{S}$和$\mathcal{N}$作为输入可以得到逼近的隐式曲面，然
 \end{align}
 和质量守恒的证明方式类似，我们也可以说明该过程是动量守恒的。其中质量和动量的传递过程我们称之为粒子转网格(P2G)。
 \subsection{网格上力的计算(GOP)}
-网格上弱可压缩模型带来力的计算是明显的，即
+网格上由弱可压缩模型带来力的计算是明显的，即
 \begin{align}
     f^{liquid}_{\mathbf{j}} = -\lambda \sum_p (det(F_p^n) - 1)\nabla B_{\mathbf{j}}^T(x_p^n)
 \end{align}
