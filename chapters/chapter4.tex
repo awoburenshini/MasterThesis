@@ -189,14 +189,14 @@ $\sum_{\mathbf{j}}m_\mathbf{j} = \sum_p m_p$，因此该分配方式依然是质
     \label{fig: grid information}
 \end{figure}
 
-\section{计算流水线}
+\section{数值修正}
 在上一节得到连续方程的离散化之后，我们接下来给出该离散方程的计算策略以及一些工程实践上的修正。
 \subsection{表面重建与粒子属性调整}
 在给定的粒子集合$\mathcal{V}$以及$t^n$时刻每个粒子$p \in \mathcal{V}$的位置$x_p$时，我们可以使用第\ref{chap3}章
 提到的方法重建表面网格，然后使用泊松圆盘采样获取表面的粒子$\mathcal{S}$。在构造隐式曲面时，我们需要额外的偏移量，此
 处我们对每一个$s\in \mathcal{S}$，在$\mathcal{V}$中寻找距离$s$最近的粒子$p_s \in \mathcal{V}$,偏移方向
 为$n_s = \frac{x_s - x_{p_s}}{\Vert x_s - x_{p_s} \Vert}$，如图\ref{fig: offset of surface particle}所示。我们将
-$\mathcal{S}$和$\mathcal{N}$作为输入可以得到逼近的隐式曲面，然后估计$S$中表面粒子的法向。
+$\mathcal{S}$和$\mathcal{N}$作为输入可以得到逼近的隐式曲面，然后估计$S$中表面粒子的法向$\tilde{n}_s$。
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=0.7]{./images/image15.png}
@@ -215,29 +215,64 @@ $v$所相关的表面点个数$C_v$，同时我们将内部点的质量均匀的
     \caption{红色点为表面粒子$s\in \mathcal{S}$，红色点通过虚线所连的蓝色点为离$s$最近的内部点$p_s\in \mathcal{V}$，橙色点$o_s\in \mathcal{O}$为新嵌入内部点}
     \label{fig: surface particle inserted}
 \end{figure}
-\subsection{粒子网格信息交互}
-实际上在上一节中，我们已经给出了把粒子上的质量信息传递到网格上的计算公式，即$m^n_{\mathbf{j}} = \sum_p m_p B_{\mathbf{j}}(x_p^n)$，我们仍然需要
-的速度信息$v_\mathbf{j}^n$，基于动量守恒的考虑[**]，我们采用的传递方式为将粒子的动量信息传递到网格上，再通过动量和质量的关系获取网格上的速度，即
+\subsection{粒子网格信息转换}
+实际上在上一节中，我们已经给出了把粒子上的质量信息传递到网格上的计算公式，即$\tilde{m}^n_{\mathbf{j}} = \sum_p \tilde{m}_p B_{\mathbf{j}}(x_p^n)$。除了质量信息之外，我们仍然需要
+速度信息$v_\mathbf{j}^n$，基于动量守恒的考虑[**]，我们采用的传递方式为将粒子的动量信息传递到网格上，再通过动量和质量的关系获取网格上的速度，即
 \begin{align}
-    (mv)_\mathbf{j}^n &= \sum_{p} m_p v_p^nB_{\mathbf{j}}(x_p^n)\\
+    (mv)_\mathbf{j}^n &= \sum_{p} \tilde{m}_p v_p^nB_{\mathbf{j}}(x_p^n)\\
     v_\mathbf{j}^n &= \frac{(mv)_\mathbf{j}^n}{m_{\mathbf{j}}^n} 
 \end{align}
-和质量守恒的证明方式类似，我们也可以说明该过程是动量守恒的。其中质量和动量的传递过程我们称之为粒子转网格(P2G)。
+和质量守恒的证明方式类似，我们也可以证明该过程是动量守恒的，详细证明见[**]。其中质量和动量的传递到网格过程我们称之为粒子转网格(Particle to Grid,简记为P2G)。
 
-假设我们在网格上更新了信息之后，为了将网格上的解算结果返回到粒子上，我们需要网格信息到粒子的过程(G2P)。最直观的做法是直接使用
-样条基函数在粒子位置上取值来传递信息，即
-\begin{align*}
-    v^{n+1}_p &= \sum_\mathbf{i} \hat{v}^{n+1}_{\mathbf{i}}B_\mathbf{i}(x_p^n)\\
-    \nabla v_p^{n+1} &= \sum_\mathbf{i} \hat{v}^{n+1}_{\mathbf{i}}\nabla B_\mathbf{i}(x_p^n)    
-\end{align*}
-然而，以上的传递方式损失了太多的速度信息，实际上我们只保留了速度在粒子上的的零阶信息，这样的结果最终将导致模拟出的流体结果过粘[**]，
-其中一种解决方案[**]为在粒子上储存更高阶的速度信息，如我们额外的在每个粒子$p$上使用一个矩阵$A_p$来保存速度的梯度，即保存速度的一阶信息。
-\subsection{网格上力的计算(GOP)}
-网格上由弱可压缩模型带来力的计算是明显的，即
+为了将网格速度信息转换到内部粒子(Grid to Particle,简记为G2P)上，最直观的办法是在粒子上采样空间网格上的速度场，即
+\begin{align}
+    v_p^n &= \sum_{\mathbf{i}} v_{\mathbf{i}}^n B_{\mathbf{i}}(x_p^n)
+\end{align}
+然而实际上，这样的采样办法只取得了速度的零阶信息，在实践中表现出来过粘的结果[**]，其中一种解决方案为保存空间速度场一阶速度信息，该方式被称为APIC[**]。
+即对每个粒子额外添加$A_p^n \in \mathbb{R}^{3\times 3}$，一般而言$A_p^n$选取为速度场在$x_p^n$处的梯度，在APIC方法中选择为梯度的近似量。
+\begin{align}
+    A_p^n = \sum_{\mathbf{i}} \frac{4}{h^2}B_{\mathbf{i}}(x_p^n)v_{\mathbf{i}}^n(x_\mathbf{i} - x_p^n)^T
+\end{align}
+对于接近表面的内部粒子$\mathcal{V}_{\mathcal{S}} = \{p_s \in \mathcal{V}:p_s = \arg\min_{p \in \mathcal{V}} \Vert p - s\Vert, s\in \mathcal{S}\}$，
+每一个$p\in \mathcal{V}_{\mathcal{S}}$记$\mathcal{N}_{p} = \{s\in \mathcal{S}:s = \arg\min_{s\in \mathcal{S}}\Vert p - s\Vert\}\cup \{o_s \in \mathcal{O}:s = \arg\min_{s\in \mathcal{S}}\Vert p - s\Vert\}$
+为其相关的表面粒子集合。这里$p_s \in \mathcal{V}_\mathcal{S}$的近似梯度计算方式修正为
+\begin{align}
+    A_{p_s}^n = \frac{1}{2C_{p_s} + 1}\sum_{q \in \mathcal{N}_{p_s}\cup \{p_s\}}\sum_{\mathbf{i}} B_{\mathbf{i}}(x_q^n)\frac{4}{h^2}v_{\mathbf{i}}^n(x_\mathbf{i} - x_{p_s}^n)^T
+\end{align}
+
+在网格转粒子的步骤中添加了梯度信息的传递之后，我们修正P2G的过程。在每一个粒子上，我们使用仿射函数来近似粒子所携带的
+速度$v_p^n(x) = v_p^n + A_p^n(x - x_p^n)$，这里动量传递据此修改为
+\begin{align}
+    (mv)_{\mathbf{j}}^n = \sum_{p}m_pv_p^n(x_\mathbf{j})B_{\mathbf{j}}(x_p^n)
+\end{align}
+同样的，表面粒子$s\in \mathcal{S}$与对应的嵌入粒子$o_s \in \mathcal{O}$也赋予
+对应的梯度信息，$A_s = A_{o_s} = A_{p_s}$，这里$p_s$为$\mathcal{V}$中距离$s$最近的内部粒子，同样使用(4.15)式来传递到网格上。
+
+在计算过程中，我们使用了$A_p^n$在近似替代$t^n$时刻速度场在位置$x_p^n$处的梯度，因此我们在更新形变梯度$F^n_p$时，为了节省计算量，我们也直接
+将$\nabla v^n_p$替代为$A_p^n$，即
+\begin{align}
+    F_p^{n+1} = (I + A_p^{n+1})F_p^n
+\end{align}
+\subsection{网格上力的计算}
+网格上由弱可压缩模型带来的力如下
 \begin{align}
     f^{liquid}_{\mathbf{j}} = -\lambda \sum_p (det(F_p^n) - 1)\nabla B_{\mathbf{j}}^T(x_p^n)
 \end{align}
-
-
-\subsection{实验结果}
+由表面张力带来的效果为
+\begin{align}
+    f^{surface}_{\mathbf{j}} = k \sum_{s\in\mathcal{S}}(I - \tilde{n}_s\tilde{n}_s^T)\nabla B_{\mathbf{j}}(x_s^n)^TA_s
+\end{align}
+因此网格上的速度场更新为
+\begin{align}
+    \hat{v}_{\mathbf{j}}^{n+1} = \frac{1}{m_\mathbf{j}^n}(m_{\mathbf{j}}^nv_{\mathbf{j}}^n + \Delta t f^{liquid}_{\mathbf{j}} + \Delta t f^{surface}_{\mathbf{j}})
+\end{align}
+\section{计算流程}
+在前文给出了每一个步骤的计算细节之后，我们在本节总结算法的计算流程。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.7]{./images/image17.png}
+    \caption{计算流水线}
+    \label{fig: surface particle inserted}
+\end{figure}
+\section{实验结果}
 
