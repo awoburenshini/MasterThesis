@@ -1,7 +1,7 @@
 \chapter{表面重建} \label{chap3}
 \section{引言}
 为了计算表面张力，我们需要一种能够从点云中获取表面和表面法向的方法。本文使用的方法是
-使用粒子水平集方法[**]获得一个粗糙的一阶连续隐式曲面，并使用MarchingCube[**]算法重构表面网格。然而该网格
+使用粒子水平集方法~\cite{boyd2012multiflip}获得一个粗糙的一阶连续隐式曲面，并使用MarchingCube~\cite{heiden1993fast}算法重构表面网格。然而该网格
 的质量只能做到一阶连续，计算得到的法向在面片之间并不连续，难以应用在表面张力所需的法向计算。本文在该网格
 上进行泊松圆盘采样，然后结合已经存在的IPIA算法，提出一种新的快速重建算法以此获得一个二阶光滑
 的隐式曲面，然后基于该隐式曲面来计算表面点云的法向。
@@ -188,7 +188,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \begin{equation}
     \mathbf{B}^T ( \mathbf{b} - \mathbf{B} \mathbf{C}) = 0    
 \end{equation}
-求解该线性系统，我们使用迭代法求解，与IPIA[**]不同，我们的迭代格式为
+求解该线性系统，我们使用迭代法求解，与IPIA~\cite{hamza2020implicit}不同，我们的迭代格式为
 \begin{equation}
 \mathbf{C}^{\alpha + 1} = \mathbf{C}^{\alpha} + \Lambda \mathbf{B}^T(\mathbf{b} - \mathbf{B}\mathbf{C}^{\alpha}) , \alpha = 0,1,2...
 \end{equation}
@@ -204,7 +204,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
     \end{split}
 \end{equation}
 这里$B_{ijk}(x) = B_{ijk}(x^1,x^2,x^3)$，并假设$\Lambda$可逆(即$\forall ijk ,\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) \neq 0$)，否则认为有某个节点$ijk$满足$\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) = 0$，由于B-样条基函数非负，则$B_{ijk}(v_r) = B_{ijk}(q_r) = 0$，我们可以去掉该节点，同时去掉对应的$\mathbf{B}$和$\mathbf{C}$对应的行，其并不影响点云附近的隐式曲面构建。
-所以我们不妨假定$\Lambda$可逆。有关收敛性的证明，详见[**]。本迭代格式相较于IPIA格式最大的优势就是内存占用少，可高度并行，我们从\textbf{Algorithm \ref{alg:LSIPIA}}来分析这一点。
+所以我们不妨假定$\Lambda$可逆。有关收敛性的证明，详见~\cite{lin2018convergence}。本迭代格式相较于IPIA格式最大的优势就是内存占用少，可高度并行，我们从\textbf{Algorithm \ref{alg:LSIPIA}}来分析这一点。
 
 我们可以发现\textbf{Algorithm \ref{alg:LSIPIA}}在第4行，第15行，第22行对应的循环可高度并行。同时需要的额外内存为储存在每个格点$\mathcal{G}$上的$C_{ijk}$，$\lambda_{ijk}$，$\Delta_{ijk}$。而这一点，我们将在下一节中
 说明里所需的额外内存可以借用物质点法中的数据结构完成，也就是说LSIPIA的优势为可复用物质点法的数据结构，同时可以高度并行。

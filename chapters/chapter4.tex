@@ -44,7 +44,7 @@ $v^n(x^n) := v(x^n,t^n), \hat{v}^{n+1}(x^n) := v(\phi_{t^{n+1},t^n}(x^n))$，因
     \int_{\Omega^{t^n}}\rho(x,t^n)\frac{\hat{v}^{n+1}(x) - v^n(x)}{\Delta t}\cdot wdx &= \int_{\Omega^{t^n}} div(\sigma)\cdot w dx + \int_{\Omega^{t^n}}\rho g\cdot w dx\\
     \sigma n &= t, x \in \partial \Omega^{t^n}\\   
 \end{align*}
-现在我们处理右端的散度项，由格林公式[**]得
+现在我们处理右端的散度项，由格林公式~\cite{evans1998partial}得
 \begin{align*}
     \int_{\Omega^{t^n}} div(\sigma)\cdot w dx &= \int_{\partial \Omega^{t^n}}w\cdot (\sigma n) ds - \int_{\Omega^{t^n}} \sigma : \nabla w dx\\
         &= \int_{\partial \Omega^{t^n}}w\cdot t ds - \int_{\Omega^{t^n}} \sigma :\nabla w dx
@@ -126,7 +126,7 @@ $\hat{v}^{n+1}(x) = \sum_{\mathbf{i}}\hat{v}^{n+1}_{\mathbf{i}}B_{\mathbf{i}}(x)
 \end{align}
 此处$p\in \mathcal{V}$为离散点云上的点，$x_p^n\in \mathbb{R}^3$为$t^n$时刻点$p$的位置，$m_p = \int_{\Omega_p^{t^n}} \rho(x,t)dx$，这里$m_p$为粒子$p$周围的质量，根据质量守恒，$m_p$与时间无关。
 再记$\hat{M}_{\mathbf{j}\mathbf{i}} = \sum_p B_{\mathbf{j}}(x_p^n)B_{\mathbf{i}}(x_p^n)m_p$
-通常我们会牺牲精度，使用矩阵行求和的方式[**]来简化矩阵$\hat{M}$。即$M_{\mathbf{jj}} = \sum_{\mathbf{i}}\hat{M}_{\mathbf{ji}}$，$M$的非对角项为0。同时注意到，
+通常我们会牺牲精度，使用矩阵行求和的方式~\cite{de2020material}来简化矩阵$\hat{M}$。即$M_{\mathbf{jj}} = \sum_{\mathbf{i}}\hat{M}_{\mathbf{ji}}$，$M$的非对角项为0。同时注意到，
 B-样条的单位分解性，我们有
 $$M_{\mathbf{jj}} = \sum_p m_p B_{\mathbf{j}}(x_p^n)\sum_\mathbf{i}B_\mathbf{i}(x_p^n) = \sum_p m_p B_{\mathbf{j}}(x_p^n)$$
 同理我们可以得到
@@ -217,18 +217,18 @@ $v$所相关的表面点个数$C_v$，同时我们将内部点的质量均匀的
 \end{figure}
 \subsection{粒子网格信息转换}
 实际上在上一节中，我们已经给出了把粒子上的质量信息传递到网格上的计算公式，即$\tilde{m}^n_{\mathbf{j}} = \sum_p \tilde{m}_p B_{\mathbf{j}}(x_p^n)$。除了质量信息之外，我们仍然需要
-速度信息$v_\mathbf{j}^n$，基于动量守恒的考虑[**]，我们采用的传递方式为将粒子的动量信息传递到网格上，再通过动量和质量的关系获取网格上的速度，即
+速度信息$v_\mathbf{j}^n$，基于动量守恒的考虑~\cite{jiang2016material}，我们采用的传递方式为将粒子的动量信息传递到网格上，再通过动量和质量的关系获取网格上的速度，即
 \begin{align}
     (mv)_\mathbf{j}^n &= \sum_{p} \tilde{m}_p v_p^nB_{\mathbf{j}}(x_p^n)\\
     v_\mathbf{j}^n &= \frac{(mv)_\mathbf{j}^n}{m_{\mathbf{j}}^n} 
 \end{align}
-和质量守恒的证明方式类似，我们也可以证明该过程是动量守恒的，详细证明见[**]。其中质量和动量的传递到网格过程我们称之为粒子转网格(Particle to Grid,简记为P2G)。
+和质量守恒的证明方式类似，我们也可以证明该过程是动量守恒的，详细证明见~\cite{jiang2016material}。其中质量和动量的传递到网格过程我们称之为粒子转网格(Particle to Grid,简记为P2G)。
 
 为了将网格速度信息转换到内部粒子(Grid to Particle,简记为G2P)上，最直观的办法是在粒子上采样空间网格上的速度场，即
 \begin{align}
     v_p^n &= \sum_{\mathbf{i}} v_{\mathbf{i}}^n B_{\mathbf{i}}(x_p^n)
 \end{align}
-然而实际上，这样的采样办法只取得了速度的零阶信息，在实践中表现出来过粘的结果[**]，其中一种解决方案为保存空间速度场一阶速度信息，该方式被称为APIC[**]。
+然而实际上，这样的采样办法只取得了速度的零阶信息，在实践中表现出来过粘的结果~\cite{tskhakaya2007particle}，其中一种解决方案为保存空间速度场一阶速度信息，该方式被称为APIC~\cite{jiang2015affine}。
 即对每个粒子额外添加$A_p^n \in \mathbb{R}^{3\times 3}$，一般而言$A_p^n$选取为速度场在$x_p^n$处的梯度，在APIC方法中选择为梯度的近似量。
 \begin{align}
     A_p^n = \sum_{\mathbf{i}} \frac{4}{h^2}B_{\mathbf{i}}(x_p^n)v_{\mathbf{i}}^n(x_\mathbf{i} - x_p^n)^T

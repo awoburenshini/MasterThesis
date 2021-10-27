@@ -33,13 +33,13 @@ $n$，同时假定$\rho$ 和 $v$在 $\Omega$的一个开邻域内足够光滑。
 \end{equation}
 
 \subsection{欧拉视角下的动量守恒定律}
-现在考虑闭区域$\Omega$上的动量变化。根据连续介质力学中的牛顿运动定律[**]，闭区域$\Omega$上的动量变化可以分为三部分，
+现在考虑闭区域$\Omega$上的动量变化。根据连续介质力学中的牛顿运动定律~\cite{gonzalez2008first}，闭区域$\Omega$上的动量变化可以分为三部分，
 第一部分为物质流入流出$\Omega$导致的动量变化，第二部分为作用在$\Omega$边界上的力导致的动量变化，第三部分为作用在$\Omega$内部物质上的力(一般为重力)产生的作用变化。
 即
 \begin{equation}
     \frac{d}{dt} \Big |_{t = t_0} \int_{\Omega} \rho v dx = -\int_{\partial \Omega} \rho v (v\cdot n) ds + \int_{\partial \Omega} \sigma \cdot n ds + \int_{\Omega} \rho g dx
 \end{equation}
-在(2.2)式中，$g$为重力加速度，$\sigma$为Cauthy应力[**]。特别的，$\sigma$是一个三阶对称矩阵，其对称性来源于角动量守恒[**]，我们将在2.4节中从另一个角度说明其对称性。
+在(2.2)式中，$g$为重力加速度，$\sigma$为Cauthy应力~\cite{gonzalez2008first}。特别的，$\sigma$是一个三阶对称矩阵，其对称性来源于角动量守恒~\cite{marsden1994mathematical}，我们将在2.4节中从另一个角度说明其对称性。
 
 由于(2.2)式中$\Omega$选择的任意性，我们有
 \begin{equation}
@@ -135,7 +135,7 @@ $$\int_{\hat{\Omega}_0} \rho(x,0)dx = \int_{\hat{\Omega}_t} \rho(x,t)dx = \int_{
 \begin{equation}
     R(X,0)\frac{\partial}{\partial t} V(X,t) = DIV(P) + Rg
 \end{equation}
-此处$DIV$是$\Omega_0$上的散度算子，为了与$\Omega_t$上进行区分记为大写。其中$P$是应力的另一种表述形式，称为First Piola–Kirchhoff应力[**]，其满足$\int_{\partial \hat{\Omega}_{0}} P \cdot N dS = \int_{\partial \hat{\Omega}_{t}} \sigma \cdot n ds$
+此处$DIV$是$\Omega_0$上的散度算子，为了与$\Omega_t$上进行区分记为大写。其中$P$是应力的另一种表述形式，称为First Piola–Kirchhoff应力~\cite{gonzalez2008first}，其满足$\int_{\partial \hat{\Omega}_{0}} P \cdot N dS = \int_{\partial \hat{\Omega}_{t}} \sigma \cdot n ds$
 我们将在下一节本构关系中更详细的给出$P$的计算方式以及与$\sigma$的关系。 
 
 下面我们再次从拉格朗日视角推导欧拉视角下的动量守恒，来证明两者的等价性。
@@ -185,7 +185,7 @@ $$\frac{\partial}{\partial t}(\rho v) + div(\rho v^{T}v) = div(\sigma) + \rho g$
 
 流体被认为是一种不可压缩的物质，用数学的语言就是说其形变梯度$F$满足$det(F)\equiv 1$，然而在实践中，为了更好的配合物质点法的使用，
 我们从要求$det(F)\equiv 1$转变为使用形变能量密度来惩罚形变对体积的影响，$W(F):= \frac{\lambda}{2} (det(F) - 1)^2$。可以发现，对任意的$F\in \mathbb{R}^{3\times 3}, U\in SO_3$，始终有$W(UF) = W(F)$，
-该特性被称为旋转不变性，根据诺特定理[**]，如果能量密度是旋转不变的，那么所得到的系统是角动量守恒的。
+该特性被称为旋转不变性，根据诺特定理~\cite{takhtadzhian2008quantum}，如果能量密度是旋转不变的，那么所得到的系统是角动量守恒的。
 
 在有了能量密度函数，我们推导能量密度变化量和形变梯度的变化量之间的关系
 \begin{equation}
@@ -216,16 +216,16 @@ $A(t_0)^{-1}A(t)$，其对应的切向量为$A(t_0)^{-1}\frac{d}{dt}\Big |_{t=t_
 这里$A:B:=\sum_{i,j}A_{ij}B_{ij}$。
 
 故$\delta det(F) = det(F) F^{-T}:\delta F$，代入$\delta W(F)$之中即有$$\delta W(F) = \lambda (det(F) - 1)det(F) F^{-T}:\delta F$$
-,其中$P = \lambda (det(F) - 1)det(F)F^{-T}$被称为First Piola–Kirchhoff应力，其与Cauthy应力$\sigma$的关系[**]为
+,其中$P = \lambda (det(F) - 1)det(F)F^{-T}$被称为First Piola–Kirchhoff应力，其与Cauthy应力$\sigma$的关系~\cite{marsden1994mathematical}为
 $$J\sigma = PF^{T}$$
 我们将在本小节最后给出该关系式的证明，代入可知柯西应力$\sigma = \lambda (det(F) - 1)I$。
 
-这里的$W(F)$实际上只给出了物体的抗压缩性的性质，我们还需要给出表面张力的能量密度函数。根据[**]，表面能实际和物体表面积成正比，表面张力为表面能的梯度。那么我们首先可以
+这里的$W(F)$实际上只给出了物体的抗压缩性的性质，我们还需要给出表面张力的能量密度函数。根据~\cite{popinet2018numerical}，表面能实际和物体表面积成正比，表面张力为表面能的梯度。那么我们首先可以
 形变和表面能量的关系
 \begin{equation}
     S(\phi_t) = k\int_{\phi_t (\partial \Omega_0)} ds
 \end{equation}
-为了更好的计算其梯度，我们对(2.10)式做一些处理。此处引入一些微分流形的记号[**]，记$f^*$为$f$导出的拉回映射，$f_*$为推前映射，$ds,d\tilde{s}$分别为曲面$\partial \Omega_{t_0}, \partial \Omega_{t}$上的面积二形式，其为空间体积形式$dv$内乘法向的结果，
+为了更好的计算其梯度，我们对(2.10)式做一些处理。此处引入一些微分流形的记号~\cite{lee2013smooth}，记$f^*$为$f$导出的拉回映射，$f_*$为推前映射，$ds,d\tilde{s}$分别为曲面$\partial \Omega_{t_0}, \partial \Omega_{t}$上的面积二形式，其为空间体积形式$dv$内乘法向的结果，
 即$ds(X,Y) = dv(n,X,Y)$,我们记$ds = dv\odot n$，$ \tilde{p} = \phi_{t_0,t}(p)$,则对任意的$t \in[0, t_0),\tilde{X},\tilde{Y}\in T_{\tilde{p}}\Omega_t$有如下
 \begin{equation}
     \begin{split}
