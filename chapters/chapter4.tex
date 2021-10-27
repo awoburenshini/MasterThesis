@@ -264,15 +264,24 @@ $v$所相关的表面点个数$C_v$，同时我们将内部点的质量均匀的
 \end{align}
 因此网格上的速度场更新为
 \begin{align}
-    \hat{v}_{\mathbf{j}}^{n+1} = \frac{1}{m_\mathbf{j}^n}(m_{\mathbf{j}}^nv_{\mathbf{j}}^n + \Delta t f^{liquid}_{\mathbf{j}} + \Delta t f^{surface}_{\mathbf{j}})
+    \hat{v}_{\mathbf{j}}^{n+1} = \frac{1}{m_\mathbf{j}^n}(m_{\mathbf{j}}^nv_{\mathbf{j}}^n + \Delta t f^{liquid}_{\mathbf{j}} + \Delta t f^{surface}_{\mathbf{j}} +\Delta t m_\mathbb{j}^n g)
 \end{align}
+此处$g$为重力加速度。
 \section{计算流程}
-在前文给出了每一个步骤的计算细节之后，我们在本节总结算法的计算流程。
+在前文给出了每一个步骤的计算细节之后，我们在本节总结算法的计算流程。首先我们的输入为粒子
+集合$\mathcal{V}$及每个粒子$p\in\mathcal{V}$的预置位置$x_p^0$以及质量$m_p$。
+默认初始化速度$v_p^0 = 0$，形变梯度与速度梯度为单位阵$I$。之后根据粒子的位置$x_p^n$激活相邻的空间网格，
+并在激活网格上初始化$m_\mathbf{i}$与$v_\mathbf{i}$的内存，同时生成Marching cube所需的距离场。接下来，在激活的稀疏网格使用Marching Cube算法
+提取距离场的水平集网格，并使用泊松圆盘采样在网格面上均匀采取表面粒子$\mathcal{S}$。然后我们估计表面粒子$s\in \mathcal{S}$的偏移量以及生成嵌入
+粒子$\mathcal{O}$，该过程用到的临近粒子搜索依然可以利用稀疏网格$\mathcal{G}$做空间哈希。在有了偏移量之后，将偏移量和粒子位置作为输入，利用LSIPIA
+拟合隐式曲面，并获得连续的法向。在这之后进行P2G，GOP，G2P三个步骤并更新粒子状态获得$x_p^{n+1},v_p^{n+1},F_p^{n+1},A_p^{n+1}$，并作为下一帧的输入。
+同时我们输出当前时刻的$x_p^{n+1}$用作渲染。流程图见\ref{fig: pipline}。
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=0.7]{./images/image17.png}
     \caption{计算流水线}
-    \label{fig: surface particle inserted}
+    \label{fig: pipline}
 \end{figure}
 \section{实验结果}
 
