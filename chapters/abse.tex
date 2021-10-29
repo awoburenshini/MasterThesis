@@ -4,15 +4,30 @@
 \addcontentsline{toc}{chapter}{Abstract}
 
 \vspace{1em}
-Since 2001，with the implementation of Basic Education Curriculum RefoHn，in our
-reform process，the policy of”many editions under one stander”makes our country’S
-math education a deep—going transformation．，SO study textbooks become focal point in
-theory and practice math education．Internal research on American math education contains：
-studying for standards，the actual class local studies，lack of total and complete analyzing
-the American school math textbook．
+In recent years, material point method(MPM) have made tremendous progress in physical simulation. 
+From film industry, geophysics, to material science, MPM have been bringing huge 
+innovations for these industries, showing its power among simulation techniques. Thanks to the universality of the MPM,
+various physical phenomena can be coupled in a system, realizing some that have never been successfully simulated in previews techniques.
+However, in fluid simulation, more artifacts appeared when we compare to other fluid simulation method, especially some unwanted fluid visious
+and unreal surface tension effects. Since the continuum represented by some particles in MPM，it is difficult to define a feasible surface of particle clouds,
+which brings great difficulties to the simulation of surface tension. At the same time, because the material point method itself has strict requirements on the
+timestep, in order to obtain a stable coupling with surface tension, damping terms are often added to the equations and implict schemes used, which intensifies the numerical
+viscosity of MPM fluid and makes simulation results unsatisfactory.
 
+This paper studies a method of simulating the surface tension of fluids under the framework of the material point method. The main idea is to use point clouds to reconstruct the
+surface of the particle represented fluid. At the same time, we propose a surface-inner particle connecting method and a discrete method for surface tension calculation, improving the
+stability of symplectic integral. Of course, symplectic scheme have less numerical dissipation than implict scheme, this feature modify the viscosity of MPM fluid. The main work of
+this paper is as follows:
+
+    1. We propose a novel surface reconstruction method based on progressive-iterative approimation. In our novel method, we can utilize the data structure of the material point method
+     to achieve high speed parallel computation without increasing the burden of memory. We also propose a normal estimate method, which is more efficient than directly calculate gradient and smoother than
+     calculated by mesh.
+
+    2. Based on our previous work, we improve the numerical scheme of surface tension. We sample the surface mesh reconstructed from point clouds to obtain surface integral particles. With this surface 
+    integral particles, we design a new and easily implemented discrete method for the surface tension calculation. At the same time, we propose a inserted particle method for surface tension conduction to inner particle.
+    This method improve the stability for symplectic scheme.
 
 
 \vspace{1em}
 
-\textbf{Keywords:}~~Education; Chinese; American; Mathematics in Primary School; Textbook
+\textbf{Keywords:}~~Material point method; Fluid simulation; surface tension; surface reconstruction
