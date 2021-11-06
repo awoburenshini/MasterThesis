@@ -405,7 +405,22 @@ B-样条阶数为2，可以计算得到$A_{uu} = \frac{h^2}{4}$，因此$A = \fr
 故近似法向选取为$n = \frac{c}{\Vert c\Vert}$。可以发现，在计算$c$时，我们只要预计算$B_{i}(y^u), i,u \in \{1,2,3\}$，这表明该算法有着更低的内存消耗，在组合法向时，同时向量值$x_{ijk} - y$的计算远比$(\partial_i B_i(x^1) \cdot B_j(x^2)B_k(x^3), B_i(x^1)\partial_2 B_j(x^2)\cdot B_k(x^3), B_i(x^1)B_j(x^2)\partial_3B_k(x^3))$计算
 有更高的效率。
 
-【**********************补图说明估计的很好********************】
+图\ref{fig:normal_compare}为二维算例的法向对比实验，可以看出使用拟合方法与直接梯度计算并没有明显的差别。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.7]{./images/normal_compare.png}
+    \caption{左上角为输入点云，右上角为拟合水平集，左下角为使用梯度直接计算法向，右下角为使用移动最小二乘拟合得来的法向}
+    \label{fig:normal_compare}
+\end{figure}
+
+图\ref{fig:normal_compare_specific}为更细致的比较。可以发现，在曲率比较大的位置，两种梯度计算有偏差，但是依然能捕捉到连续的法向，这对本身就是拟合点云得来的结果
+并无影响。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.5]{./images/normal_compare_specific.png}
+    \caption{下方图表为上方图标选取的局部放大，红色箭头为拟合法向，黑色箭头为梯度计算的法向}
+    \label{fig:normal_compare_specific}
+\end{figure}
 \section{本章小结}
 本章给出了点云表面重建的方法，首先我们建立了点云的距离场，并使用合适的阙值$r$探查点云大致轮廓，
 并使用Marching cube算法来构造一阶连续曲面。为了得到更光滑的结果来获得更光滑的法向，
