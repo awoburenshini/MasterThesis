@@ -284,4 +284,24 @@ $v$所相关的表面点个数$C_v$，同时我们将内部点的质量均匀的
     \label{fig: pipline}
 \end{figure}
 \section{实验结果}
+为了验证提出的表面张力计算方法，以下给出四个具体的数值实验。以下实验表面粒子采样皆为40000，空间网格$\frac{1}{256}$，时间步长为$\Delta t = 1e^{-5}$，为了保证足够的抗压缩性弱可压缩系数$\lambda$选取为$60000$。
+以下实验底层代码均为C++，使用python调用，实验平台CPU为i7-9700@3.00GHz，内存为16GB。
+\subsection{水滴自由下落}
+该实验表面张力系数$k = 8.0$，球体由80000粒子表示。该实验总耗用内存约为14GB，每个时间步长平均为0.7487s，每一帧由50个时间步长组成，
+平均一帧耗时为37秒。水滴由初速度0.1，初始高度0.02，自由下落，在触及光滑表面后形变并回弹，具体实验场景见图\ref{fig: sphere Drop experience}。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.6]{./images/DropNotSplashEXP.png}
+    \caption{水滴下落实验}
+    \label{fig: sphere Drop experience}
+\end{figure}
 
+\subsection{拓扑变化}
+该实验表面张力系数$k = 2.0$，球体由60000粒子表示。该实验耗用内存约为12GB，每个时间步长平均为0.8523s，每一帧由150个时间步长组成，
+平均一帧耗时为122秒。水滴初速度为0.9，初始高度为0.2，自由下落。可以发现在触及光滑表面后出现拓扑变化，然后再表面张力的影响下慢慢恢复，具体实验场景见\ref{fig: sphere splash experience}。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.7]{./images/DropSplashEXP.png}
+    \caption{水滴拓扑变化}
+    \label{fig: sphere splash experience}
+\end{figure}
