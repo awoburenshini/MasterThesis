@@ -11,7 +11,7 @@
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=1.0]{./images/image3.png}
-    \caption{二维情况$\mathcal{S}(v)$（左）与$\mathcal{S}(\mathcal{V})$（右）}
+    \caption[球水平集示意图]{二维情况$\mathcal{S}(v)$（左）与$\mathcal{S}(\mathcal{V})$（右）}
     \label{fig:particle levelset}
 \end{figure}
 
@@ -84,12 +84,12 @@ $r$，则将格点标记为1，如此下来，所有的正方体格点都被标�
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=0.5]{./images/experience1.png}
-    \caption{图(1)为输入点云,图(2)为直接提取网格结果,图(3)为LSPIA拟合后提取的网格结果}
-    \label{fig: MarchingCube vs after LSPIA}
+    \caption[提取网格对比]{图(1)为输入点云,图(2)为直接提取网格结果,图(3)为LSIPIA拟合后提取的网格结果}
+    \label{fig: MarchingCube vs after LSIPIA}
 \end{figure}
 
 
-从实验结果的图\ref{fig: MarchingCube vs after LSPIA}(2)中可以发现，Marching cube算法确实提取出了一个点云的边界轮廓，但是轮廓只能做到一阶连续，法向明显不连续，同时其三角网格质量无法
+从实验结果的图\ref{fig: MarchingCube vs after LSIPIA}(2)中可以发现，Marching cube算法确实提取出了一个点云的边界轮廓，但是轮廓只能做到一阶连续，法向明显不连续，同时其三角网格质量无法
 无法保证，甚至可以明显看出存在一些尖锐地方，网格质量极差，上述的问题给我们计算表面张力带来了很大的阻碍。
 
 \section{LSIPIA}
@@ -206,7 +206,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 我们可以发现\textbf{Algorithm \ref{alg:LSIPIA}}在第4行，第15行，第22行对应的循环可高度并行。同时需要的额外内存为储存在每个格点$\mathcal{G}$上的$C_{ijk}$，$\lambda_{ijk}$，$\Delta_{ijk}$。而这一点，我们将在下一节中
 说明里所需的额外内存可以借用物质点法中的数据结构完成，也就是说LSIPIA的优势为可复用物质点法的数据结构，同时可以高度并行。
 
-图\ref{fig: MarchingCube vs after LSPIA}(3)为使用LSIPIA拟合点云后的结果,可以发现拟合结果明显更光滑。图\ref{fig: LSIPIA_experience}更多的实验结果，图中实验皆选自Yusuf等人~\cite{hamza2020implicit}在2019年耗时较长的实验，在原文中最短的兔子实验耗时为88.24秒，其他三个模型均在900秒以上。
+图\ref{fig: MarchingCube vs after LSIPIA}(3)为使用LSIPIA拟合点云后的结果,可以发现拟合结果明显更光滑。图\ref{fig: LSIPIA_experience}更多的实验结果，图中实验皆选自Yusuf等人~\cite{hamza2020implicit}在2019年耗时较长的实验，在原文中最短的兔子实验耗时为88.24秒，其他三个模型均在900秒以上。
 其实验平台处理器为Intel-core i7 @3.6GHZ,内存RAM为16GB。本文的实验平台为Intel-Core i5 @1.6GHZ，内存RAM为8GB。具体性能如表\ref{tab:LSIPIA perfomance}，可以发现在以下四个实验中即使使用了更精细的空间网格以及较为逊色的运行平台，相比于IPIA性能依然有三个数量级的提升，且性能瓶颈主要集中在网格尺寸上。
 \begin{table}[htb]
     \centering
@@ -226,7 +226,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=0.67]{./images/LSIPIA_experience.png}
-    \caption{LSIPIA实验图，其中左上角模型为bunny模型实验，左上角第一张图为bunny点云输入，第二张为LSIPIA拟合结果。右上角，左下角，右下角分别为budahha模型，armadillo模型，fertility模型的实验结果}
+    \caption[LSIPIA实验结果]{LSIPIA实验图，其中左上角模型为bunny模型实验，左上角第一张图为bunny点云输入，第二张为LSIPIA拟合结果。右上角，左下角，右下角分别为budahha模型，armadillo模型，fertility模型的实验结果}
     \label{fig: LSIPIA_experience}
 \end{figure}
 
@@ -288,7 +288,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=1.0]{./images/image9.png}
-    \caption{蓝色正方形为其紧支集能够覆盖$x$的自由度，$x_{i_0j_0}$为左下角格点坐标}
+    \caption[自由度图例]{蓝色正方形为其紧支集能够覆盖$x$的自由度，$x_{i_0j_0}$为左下角格点坐标}
     \label{fig:2D basis}
 \end{figure}
 
@@ -402,7 +402,7 @@ B-样条阶数为2，可以计算得到$A_{uu} = \frac{h^2}{4}$，因此$A = \fr
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=0.7]{./images/normal_compare.png}
-    \caption{左上角为输入点云，右上角为拟合水平集，左下角为使用梯度直接计算法向，右下角为使用移动最小二乘拟合得来的法向}
+    \caption[快速法向计算二维对比]{左上角为输入点云，右上角为拟合水平集，左下角为使用梯度直接计算法向，右下角为使用移动最小二乘拟合得来的法向}
     \label{fig:normal_compare}
 \end{figure}
 
@@ -411,7 +411,7 @@ B-样条阶数为2，可以计算得到$A_{uu} = \frac{h^2}{4}$，因此$A = \fr
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=0.5]{./images/normal_compare_specific.png}
-    \caption{下方图表为上方图标选取的局部放大，红色箭头为拟合法向，黑色箭头为梯度计算的法向}
+    \caption[两种法向对比]{下方图表为上方图标选取的局部放大，红色箭头为拟合法向，黑色箭头为梯度计算的法向}
     \label{fig:normal_compare_specific}
 \end{figure}
 \section{本章小结}
