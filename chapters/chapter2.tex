@@ -216,11 +216,11 @@ $A(t_0)^{-1}A(t)$，其对应的切向量为$A(t_0)^{-1}\frac{d}{dt}\Big |_{t=t_
 这里$A:B:=\sum_{i,j}A_{ij}B_{ij}$。
 
 故$\delta det(F) = det(F) F^{-T}:\delta F$，代入$\delta W(F)$之中即有$$\delta W(F) = \lambda (det(F) - 1)det(F) F^{-T}:\delta F$$
-,其中$P = \lambda (det(F) - 1)det(F)F^{-T}$被称为First Piola–Kirchhoff应力，其与Cauthy应力$\sigma$的关系~\cite{marsden1994mathematical}为
+其中$P = \lambda (det(F) - 1)det(F)F^{-T}$被称为First Piola–Kirchhoff应力，其与Cauthy应力$\sigma$的关系~\cite{marsden1994mathematical}为
 $$J\sigma = PF^{T}$$
 我们将在本小节最后给出该关系式的证明，代入可知柯西应力$\sigma = \lambda (det(F) - 1)I$。
 
-这里的$W(F)$实际上只给出了物体的抗压缩性的性质，我们还需要给出表面张力的能量密度函数。根据~\cite{popinet2018numerical}，表面能实际和物体表面积成正比，表面张力为表面能的梯度。那么我们首先可以
+这里的$W(F)$实际上只给出了物体的抗压缩性的性质，我们还需要给出表面张力的能量密度函数。根据~\cite{popinet2018numerical}，表面能实际和物体表面积成正比，表面张力为表面能的梯度。那么我们首先可以得出
 形变和表面能量的关系
 \begin{equation}
     S(\phi_t) = k\int_{\phi_t (\partial \Omega_0)} ds
@@ -255,7 +255,7 @@ $$(\phi_{t_0,t}^*ds) = det(F(x;t_0,t)) \Vert F^{-T}(x;t_0,t)\tilde{n}\Vert d\til
         S(\phi_{t_0}) = k \int_{\partial \Omega_t} det(F(x;t_0,t)) \Vert F^{-T}(x;t_0,t)\tilde{n}\Vert d\tilde{s}
     \end{split}
 \end{equation}
-(2.21)式将是表面张力离散化的基础。
+(2.13)式将是表面张力离散化的基础。
 
 最后，我们给出$J\sigma = PF^{T}$的证明，
 \begin{align*}
