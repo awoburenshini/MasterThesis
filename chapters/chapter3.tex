@@ -11,7 +11,7 @@
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=0.75]{./images/image3.png}
-    \caption[球水平集示意图]{二维情况$\mathcal{S}(v)$（左）与$\mathcal{S}(\mathcal{V})$（右）}
+    \caption[球水平集示意图]{二维情况$\mathcal{S}(v)$(左)与$\mathcal{S}(\mathcal{V})$(右)}
     \label{fig:particle levelset}
 \end{figure}
 
@@ -22,7 +22,7 @@
 
 \section{水平集网格提取}
 Marching cube通常用于三维标量场的水平集的可视化，本文使用Marching cube算法来获取水平集的三角网格，在本文中我们的水平集为
-$\mathcal{S}(\mathcal{V}) = \{x\in \mathbb{R}^3: d(x,\mathcal{V}) = r\}$。
+$$\mathcal{S}(\mathcal{V}) = \{x\in \mathbb{R}^3: d(x,\mathcal{V}) = r\}$$。
 
 
 \begin{figure}[htbp]
@@ -227,7 +227,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \end{table}
 \begin{figure}[htbp]
     \centering
-    \includegraphics[scale=0.67]{./images/LSIPIA_experience.png}
+    \includegraphics[scale=0.60]{./images/LSIPIA_experience.png}
     \caption[LSIPIA实验结果]{LSIPIA实验图，其中左上角模型为bunny模型实验，左上角第一张图为bunny点云输入，第二张为LSIPIA拟合结果。右上角，左下角，右下角分别为budahha模型，armadillo模型，fertility模型的实验结果}
     \label{fig: LSIPIA_experience}
 \end{figure}
@@ -239,9 +239,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
     \begin{algorithmic}[1]
     \Require 点云位置$\mathcal{V}$,点云法向$\mathcal{N}$,背景网格格点集合$\mathcal{G}$,指定迭代次数$LoopTimes$
     \Ensure 隐式曲面$f(x) = \sum_{ijk} C_{ijk}B_{ijk}(x)$,即输出参数值$C_{ijk}$
-    \State 初始化$\forall ijk,C_{ijk} = 0$
-    \State 初始化$\forall ijk,\lambda_{ijk} = 0$
-    \State 初始化偏移量$\epsilon$
+    \State 初始化$\forall ijk,C_{ijk} = 0$，初始化$\forall ijk,\lambda_{ijk} = 0$，初始化偏移量$\epsilon$
     \For{$r \in \#\mathcal{V}$}
         \State 预计算下标为$I = \{ijk : v_r \in supp(B_{ijk})\}$的张量积B-样条函数，储存为$B_{ijk}(v_r)$
         \For{$ijk \in I$}
@@ -299,10 +297,11 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
     \begin{split}
         \nabla f &= \sum_{ijk} C_{ijk} \nabla B_{ijk}(x)\\
         &= \sum_{ijk} C_{ijk} \nabla (B_i(x^1)B_j(x^2)B_k(x^3))\\
-        &= \sum_{ijk} C_{ijk} (\partial_i B_i(x^1) \cdot B_j(x^2)B_k(x^3), B_i(x^1)\partial_2 B_j(x^2)\cdot B_k(x^3), B_i(x^1)B_j(x^2)\partial_3B_k(x^3))\\
+        &= \sum_{ijk} C_{ijk} (Z_1, Z_2, Z_3)\\
     \end{split}
 \end{equation}
-可以发现要计算$x$点的梯度$\nabla f$, 我们需要计算的有$B_i(x^r),\partial_r B_i(x^r), i \in \{0,1,2\}, r \in \{1,2,3\}$,其中样条阶数越高，计算$\partial_r B_i(x^r)$代价越大，并且$\partial_r B_i(x^r)$为分段函数,故在不同的$r$之间不可能做到单指令多数据流并行，同样在拼装
+此处$Z_1 = \partial_1 B_i(x^1) \cdot B_j(x^2)B_k(x^3)$，$Z_2 = B_i(x^1) \partial_2 B_j(x^2)\cdot B_k(x^3)$，以及$Z_3 = B_i(x^1)B_j(x^2) \cdot\partial_3 B_k(x^3)$
+可以发现要计算$x$点的梯度$\nabla f$, 我们需要计算的有$$B_i(x^r),\partial_r B_i(x^r), i \in \{0,1,2\}, r \in \{1,2,3\}$$其中样条阶数越高，计算$\partial_r B_i(x^r)$代价越大，并且$\partial_r B_i(x^r)$为分段函数,故在难以在$r$之间不可能做到单指令多数据流并行，同样在拼装
 $\nabla B_{ijk}(x)$时每一个维度需要单独的计算。基于这些缺点，我们提出另一个近似法向的计算方法。这里我们使用移动加权最小二乘来逼近格点系数，我们将会看到在
 格点张量积B-样条基下，移动加权最小二乘将有惊人的简单形式。
 
@@ -335,18 +334,20 @@ $\nabla B_{ijk}(x)$时每一个维度需要单独的计算。基于这些缺点�
 
 此处我们记$A = \sum_{ijk}B_{ijk}(y)(x_{ijk} - y)(x_{ijk} - y)^T$。首先我们计算$A$的非对角项即$A_{uv}, u\neq v\text{其中} u,v \in \{1,2,3\}$,这里再记$w \in \{1,2,3\}\text{且} w \notin \{u,v\} $。
 即
+{
 \begin{equation}
     \begin{split}
         A_{uv} &= \sum_{i_1 i_2 i_3} B_{i_1 i_2 i_3}(y) (x_{i_1 i_2 i_3}^u - y^u)(x_{i_1 i_2 i_3}^v - y^v)\\
         & = \sum_{i_u i_v i_w} B_{i_u}(y^u)B_{i_v}(y^v)B_{i_w}(y^w) (x_{i_u i_v i_w}^u - y^u)(x_{i_u i_v i_w}^v - y^v)\\
         & = \sum_{i_w}B_{i_w}(y^w)(\sum_{i_u}B_{i_u}(y^u)(x_{i_u i_v i_w}^u - y^u))(\sum_{i_v}B_{i_v}(y^v)(x_{i_u i_v i_w}^v - y^v))\\
-        & =  \sum_{i_w}B_{i_w}(y^w)(\sum_{i_u}B_{i_u}(y^u)x_{i_u i_v i_w}^u - y^u\sum_{i_u}B_{i_u}(y^u))(\sum_{i_v}B_{i_v}(y^v)x_{i_u i_v i_w}^v - y^v\sum_{i_v}B_{i_v}(y^v))
+        & =  \sum_{i_w}B_{i_w}(y^w)(\sum_{i_u}B_{i_u}(y^u)x_{i_u i_v i_w}^u - y^uJ_u)(\sum_{i_v}B_{i_v}(y^v)x_{i_u i_v i_w}^v - y^vJ_v)
     \end{split}
 \end{equation}
-
-这里我们注意到B-样条基函数的单位分解性$\sum_i B_i(x) = 1$以及线性还原性$\sum_i x_iB_i(x) = x$，带入到
-(3.13)式中我们有
-$$\sum_{i_w}B_{i_w}(y^w)(\sum_{i_u}B_{i_u}(y^u)x_{i_u i_v i_w}^u - y^u\sum_{i_u}B_{i_u}(y^u))(\sum_{i_v}B_{i_v}(y^v)x_{i_u i_v i_w}^v - y^v\sum_{i_v}B_{i_v}(y^v)) = 0$$
+}
+此处$J_u = \sum_{i_u}B_{i_u}(y^u)$, $J_v = \sum_{i_v}B_{i_v}(y^v)$。
+这里我们注意到标准B-样条基函数的单位分解性$\sum_i B_i(x) = 1$以及线性还原性$\sum_i x_iB_i(x) = x$，带入到
+(3.14)式中我们有
+$$\sum_{i_w}B_{i_w}(y^w)(\sum_{i_u}B_{i_u}(y^u)x_{i_u i_v i_w}^u - y^uJ_u)(\sum_{i_v}B_{i_v}(y^v)x_{i_u i_v i_w}^v - y^vJ_v) = 0$$
 因此$u\neq v\text{时}A_{uv} = 0$，即$A$为对角阵。
 
 接下来考察$u = v$时$A_{uv}$的值，而
@@ -360,6 +361,7 @@ $$\sum_{i_w}B_{i_w}(y^w)(\sum_{i_u}B_{i_u}(y^u)x_{i_u i_v i_w}^u - y^u\sum_{i_u}
 \end{equation}
 我们将说明$\sum_{i_u} B_{i_u}(y^u)(x_{i_1i_2i_3}^u - y^u)$恒为常数。这里我们注意到均匀n阶B-样条导数公式为$\frac{d}{dy} B_i^n(y) = B_i^{n-1}(y+\frac{1}{2}) - B_i^{n-1}(y - \frac{1}{2})$,
 此处假定样条阶数为$n$,同时再记$B_{i_u}(y^u)$为$B_{i_u}^n(y^u)$，现在考察$\sum_{i_u} B_{i_u}(y^u)(x_{i_1i_2i_3}^u - y^u)$导数
+{\small
 \begin{equation}
     \begin{split}
         &\frac{d}{dy^u}\sum_{i_u} B_{i_u}^n(y^u) (x_{i_1 i_2 i_3}^u - y^u)^2\\ 
@@ -380,7 +382,7 @@ $$\sum_{i_w}B_{i_w}(y^w)(\sum_{i_u}B_{i_u}(y^u)x_{i_u i_v i_w}^u - y^u\sum_{i_u}
         &= 0 \\
     \end{split}
 \end{equation}
-
+}
 从式(3.15)的推导中可以看出，其导数恒为0，因此$A_{uu} = \sum_{i_u} B_{i_u}^n(y^u) (x_{i_1 i_2 i_3}^u - y^u)^2$恒为常数。事实上，在本文中，
 B-样条阶数为2，可以计算得到$A_{uu} = \frac{h^2}{4}$，因此$A = \frac{h^2}{4}I$，代入到(3.12)式中我们有如下
 \begin{equation}
