@@ -208,7 +208,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 我们可以发现\textbf{Algorithm \ref{alg:LSIPIA}}在第4行，第15行，第22行对应的循环可高度并行。同时需要的额外内存为储存在每个格点$\mathcal{G}$上的$C_{ijk}$，$\lambda_{ijk}$，$\Delta_{ijk}$。而这一点，我们将在下一节中
 说明里所需的额外内存可以借用物质点法中的数据结构完成，也就是说LSIPIA的优势为可复用物质点法的数据结构，同时可以高度并行。
 
-图\ref{fig: MarchingCube vs after LSIPIA}(3)为使用LSIPIA拟合点云后的结果,可以发现拟合结果明显更光滑。图\ref{fig: LSIPIA_experience}更多的实验结果，图中实验皆选自Yusuf等人~\cite{hamza2020implicit}在2019年耗时较长的实验，在原文中最短的兔子实验耗时为88.24秒，其他三个模型均在900秒以上。
+图\ref{fig: MarchingCube vs after LSIPIA}(3)为使用LSIPIA拟合点云后的结果,可以发现拟合结果明显更光滑。图\ref{fig: LSIPIA_experience}展示了更多的实验结果，图中实验皆选自Yusuf等人~\cite{hamza2020implicit}在2019年耗时较长的实验，在原文中最短的兔子实验耗时为88.24秒，其他三个模型均在900秒以上，
 其实验平台处理器为Intel-core i7 @3.6GHZ,内存RAM为16GB。本文的实验平台为Intel-Core i5 @1.6GHZ，内存RAM为8GB。具体性能如表\ref{tab:LSIPIA perfomance}，可以发现在以下四个实验中即使使用了更精细的空间网格以及较为逊色的运行平台，相比于IPIA性能依然有三个数量级的提升，且性能瓶颈主要集中在网格尺寸上。
 \begin{table}[htb]
     \centering
@@ -284,7 +284,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \end{equation}
 获取法向我们可以直接计算其梯度$\nabla f$，我们首先分析计算一个点上的梯度所需要的代价。
 首先根据张量积B-样条函数的定义$B_{ijk}(x) = B_i(x^1) * B_j(x^2) * B_k(x^3)$，如果选取的为二次样条，则在二维情况下
-其能够覆盖到点$x$的基函数如图\ref{fig:2D basis}，所以能够覆盖到点$x$的坐标个点为$I = \{ij: i = i_0 + k, j = i_0 + l, \text{其中}k, l \in \{0,1,2\}\}$。
+其能够覆盖到点$x$的基函数如图\ref{fig:2D basis}，所以能够覆盖到点$x$的坐标格点为$I = \{ij: i = i_0 + k, j = i_0 + l, \text{其中}k, l \in \{0,1,2\}\}$。
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=1.0]{./images/image9.png}
@@ -301,9 +301,9 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
     \end{split}
 \end{equation}
 此处$Z_1 = \partial_1 B_i(x^1) \cdot B_j(x^2)B_k(x^3)$，$Z_2 = B_i(x^1) \partial_2 B_j(x^2)\cdot B_k(x^3)$，以及$Z_3 = B_i(x^1)B_j(x^2) \cdot\partial_3 B_k(x^3)$
-可以发现要计算$x$点的梯度$\nabla f$, 我们需要计算的有$$B_i(x^r),\partial_r B_i(x^r), i \in \{0,1,2\}, r \in \{1,2,3\}$$其中样条阶数越高，计算$\partial_r B_i(x^r)$代价越大，并且$\partial_r B_i(x^r)$为分段函数,故在难以在$r$之间不可能做到单指令多数据流并行，同样在拼装
+可以发现要计算$x$点的梯度$\nabla f$, 我们需要计算的有$$B_i(x^r),\partial_r B_i(x^r), i \in \{0,1,2\}, r \in \{1,2,3\}$$其中样条阶数越高，计算$\partial_r B_i(x^r)$代价越大，并且$\partial_r B_i(x^r)$为分段函数,故在难以在$r$之间难以做到单指令多数据流并行，同样在拼装
 $\nabla B_{ijk}(x)$时每一个维度需要单独的计算。基于这些缺点，我们提出另一个近似法向的计算方法。这里我们使用移动加权最小二乘来逼近格点系数，我们将会看到在
-格点张量积B-样条基下，移动加权最小二乘将有惊人的简单形式。
+格点张量积B-样条基下，移动加权最小二乘的结果将有惊人的简单形式。
 
 我们寻求的近似目标函数为
 \begin{equation}
