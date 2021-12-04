@@ -171,7 +171,7 @@ $$M_{\mathbf{jj}} = \sum_p m_p B_{\mathbf{j}}(x_p^n)\sum_\mathbf{i}B_\mathbf{i}(
 \end{align}
 
 \subsection{数据表示与储存}
-从式(4.7)，(4.8)，(4.9)可以看到，我们需要的变量有$x_p^n\in \mathbb{R}^3,v_p^{n}\in \mathbb{R}^3,F_p^n\in \mathbb{R}^{3\times 3}$，这些变量我们都储存在粒子上，由于粒子上储存质量信息不会随着时间改变，因此该数据表示方式
+从式(4.8)，(4.9)，(4.10)可以看到，我们需要的变量有$x_p^n\in \mathbb{R}^3,v_p^{n}\in \mathbb{R}^3,F_p^n\in \mathbb{R}^{3\times 3}$，这些变量我们都储存在粒子上，由于粒子上储存质量信息不会随着时间改变，因此该数据表示方式
 自然的满足了质量守恒方程。如图\ref{fig: particle information}所示
 \begin{figure}[htbp]
     \centering
@@ -275,7 +275,7 @@ $v$所相关的表面点个数$C_v$，同时我们将内部点的质量均匀的
 默认初始化速度$v_p^0 = 0$，形变梯度与速度梯度为单位阵$I$。之后根据粒子的位置$x_p^n$激活相邻的空间网格，
 并在激活网格上初始化$m_\mathbf{i}$与$v_\mathbf{i}$的内存，同时生成Marching cube所需的距离场。接下来，在激活的稀疏网格使用Marching Cube算法
 提取距离场的水平集网格，并使用泊松圆盘采样在网格面上均匀采取表面粒子$\mathcal{S}$。然后我们估计表面粒子$s\in \mathcal{S}$的偏移量以及生成嵌入
-粒子$\mathcal{O}$，该过程用到的临近粒子搜索依然可以利用稀疏网格$\mathcal{G}$做空间哈希。在有了偏移量之后，将偏移量和粒子位置作为输入，利用LSIPIA
+粒子$\mathcal{O}$，该过程用到的临近粒子搜索依然可以利用稀疏网格$\mathcal{G}$做空间哈希。在有了偏移量之后，将偏移量和粒子位置作为输入，利用Sparse-LSIPIA
 拟合隐式曲面，并获得连续的法向。在这之后进行P2G，GOP，G2P三个步骤并更新粒子状态获得$x_p^{n+1},v_p^{n+1},F_p^{n+1},A_p^{n+1}$，并作为下一帧的输入。
 同时我们输出当前时刻的$x_p^{n+1}$用作渲染。流程图见\ref{fig: pipline}。
 

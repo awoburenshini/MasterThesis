@@ -1,8 +1,8 @@
 \chapter{表面重建} \label{chap3}
 \section{引言}
 为了计算表面张力，我们需要一种能够从点云中获取表面和表面法向的方法。本文使用的方法是
-使用粒子水平集方法~\cite{boyd2012multiflip}获得一个粗糙的一阶连续隐式曲面，并使用MarchingCube~\cite{heiden1993fast}算法重构表面网格。然而该网格
-的质量只能做到一阶连续，计算得到的法向在面片之间并不连续，难以应用在表面张力所需的法向计算。本文在该网格
+使用粒子水平集方法~\cite{boyd2012multiflip}获得一个粗糙的$C^0$连续隐式曲面，并使用Marching Cube~\cite{heiden1993fast}算法重构表面网格。然而该网格
+的质量只能做到$C^0$连续，计算得到的法向在面片之间并不连续，难以应用在表面张力所需的法向计算。本文在该网格
 上进行泊松圆盘采样，然后结合已经存在的IPIA算法~\cite{hamza2020implicit}，提出一种新的快速重建算法以此获得一个二阶光滑
 的隐式曲面，然后基于该隐式曲面来计算表面点云的法向。
 \section{粒子水平集方法}
@@ -84,16 +84,16 @@ $r$，则将格点标记为1，如此下来，所有的正方体格点都被标�
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=0.5]{./images/experience1.png}
-    \caption[提取网格对比]{图(1)为输入点云,图(2)为直接提取网格结果,图(3)为LSIPIA拟合后提取的网格结果}
-    \label{fig: MarchingCube vs after LSIPIA}
+    \caption[提取网格对比]{图(1)为输入点云,图(2)为直接提取网格结果,图(3)为Sparse-LSIPIA拟合后提取的网格结果}
+    \label{fig: MarchingCube vs after Sparse-LSIPIA}
 \end{figure}
 
 
-从实验结果的图\ref{fig: MarchingCube vs after LSIPIA}(2)中可以发现，Marching cube算法确实提取出了一个点云的边界轮廓，但是轮廓只能做到一阶连续，法向明显不连续，同时其三角网格质量无法
+从实验结果的图\ref{fig: MarchingCube vs after Sparse-LSIPIA}(2)中可以发现，Marching cube算法确实提取出了一个点云的边界，但是轮廓只能做到$C^0$连续，法向明显不连续，同时其三角网格质量无法
 无法保证，甚至可以明显看出存在一些尖锐地方，网格质量极差，上述的问题给我们计算表面张力带来了很大的阻碍。
 
 \section{隐式曲面拟合}
-为了解决法向不连续的问题以及网格质量差的问题，我们使用二阶连续的隐式曲面来逼近三角网格，因此隐式曲面的法向一阶连续。
+为了解决法向不连续的问题以及网格质量差的问题，我们使用$C^1$连续的隐式曲面来逼近三角网格，因此隐式曲面的法向$C^0$连续。
 
 \subsection{隐式曲面的渐进迭代逼近}
 我们首先给出隐式曲面重建问题，给定一个无序点集$\mathcal{V} = \{v_i = (v_i^1,v_i^2,v_i^3)\}_{i = 1}^n$以及点
@@ -118,7 +118,7 @@ $$B(x) = \begin{cases}
     \caption{二次标准B-样条基函数}
     \label{fig: standard B-spline basis}
 \end{figure}
-则最小化问题(3.2)转化成
+则最小化问题(3.1)转化成
 \begin{equation}
     \begin{split}
         \min_{C_{ijk}}E(C_{111},C_{112},...,C_{N_xN_yN_z}):=\frac{1}{2}\sum_{i = 1}^{n} f(v_i^1,v_i^2,v_i^3)^2 
@@ -188,32 +188,52 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \begin{equation}
     \mathbf{B}^T ( \mathbf{b} - \mathbf{B} \mathbf{C}) = 0    
 \end{equation}
-求解该线性系统，我们使用迭代法求解，与IPIA不同，我们的迭代格式为
+求解该线性系统，我们使用迭代法求解。
+在IPIA中，迭代格式如下
+\begin{equation}
+    \mathbf{C}^{\alpha + 1} = \mathbf{C}^{\alpha} + \mu \mathbf{B}^T(\mathbf{b} - \mathbf{B}\mathbf{C}^{\alpha}) , \alpha = 0,1,2...
+\end{equation}
+这里$\mu \in \mathbf{R}$，为了保证收敛性，这里要求$\mu\in (0,\frac{2}{\lambda_{max}(\mathbf{B}^T\mathbf{B})})$，
+此处$\lambda_{max}(\mathbf{B}^T\mathbf{B})$为$\mathbf{B}^T\mathbf{B}$的最大特征值，在IPIA原文中选取
+为$\mu = \frac{2}{C}, C = {\Vert \mathbf{B}^T\mathbf{B} \Vert}_{\infty}$。
+
+与IPIA不同，我们的迭代格式为
 \begin{equation}
 \mathbf{C}^{\alpha + 1} = \mathbf{C}^{\alpha} + \Lambda \mathbf{B}^T(\mathbf{b} - \mathbf{B}\mathbf{C}^{\alpha}) , \alpha = 0,1,2...
 \end{equation}
-这里$\Lambda$为
+这里$\Lambda$为矩阵，具体形式如下
 \begin{equation}
     \begin{split}
         \begin{bmatrix}
             \frac{1}{\sum_{r = 1}^n B_{111}(v_r) +B_{111}(q_r)} & 0 & ... & 0\\
             0 & \frac{1}{\sum_{r = 1}^n B_{112}(v_r) +B_{112}(q_r)} & ... & 0\\
             \vdots & \vdots & ... & \vdots \\
-            0 & 0 & ... & \frac{1}{\sum_{r = 1}^n B_{N_xN_yN_z}(v_r) +B_{N_xN_yN_z}(q_r)} \\
+            0 & 0 & ... & \frac{1}{\sum_{r = 1}^n B_{N_xN_yN_z}(v_r) + B_{N_xN_yN_z}(q_r)} \\
         \end{bmatrix}
     \end{split}
 \end{equation}
-这里$B_{ijk}(x) = B_{ijk}(x^1,x^2,x^3)$，并假设$\Lambda$可逆(即$\forall ijk ,\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) \neq 0$)，否则认为有某个节点$ijk$满足$\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) = 0$，由于B-样条基函数非负，则$B_{ijk}(v_r) = B_{ijk}(q_r) = 0$，我们可以去掉该节点，同时去掉对应的$\mathbf{B}$和$\mathbf{C}$对应的行，其并不影响点云附近的隐式曲面构建。
-所以我们不妨假定$\Lambda$可逆。有关收敛性的证明，详见LSPIA~\cite{lin2018convergence}。本迭代格式(下称为LSIPIA)相较于IPIA格式最大的优势就是内存占用少，可高度并行，我们从\textbf{Algorithm \ref{alg:LSIPIA}}来分析这一点。
-我们可以发现\textbf{Algorithm \ref{alg:LSIPIA}}在第4行，第15行，第22行对应的循环可高度并行。同时需要的额外内存为储存在每个格点$\mathcal{G}$上的$C_{ijk}$，$\lambda_{ijk}$，$\Delta_{ijk}$。而这一点，我们将在下一节中
-说明里所需的额外内存可以借用物质点法中的数据结构完成，也就是说LSIPIA的优势为可复用物质点法的数据结构，同时可以高度并行。
+这里$B_{ijk}(x) = B_{ijk}(x^1,x^2,x^3)$，并假设$\Lambda$可逆(即$\forall ijk ,\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) \neq 0$)，否则认为有某个节点$ijk$满足$\sum_{r = 1}^n B_{ijk}(v_r) +B_{ijk}(q_r) = 0$，由于B-样条基函数非负，
+则$B_{ijk}(v_r) = B_{ijk}(q_r) = 0$，我们可以去掉该节点，同时去掉对应的$\mathbf{B}$和$\mathbf{C}$对应的行，其并不影响点云附近的隐式曲面构建。所以我们不妨假定$\Lambda$可逆。在有了这个假设之后，我们进一步发现，我们可以将问题规模大大减小。
+如图~\ref{fig: SparseSparse-LSIPIA}所示，对拟合结果有影响的自由度仅仅为图中谈红色区域，在本文的二阶B-样条基函数中，实际为离粒子最近的四个正方块，这启发我们使用稀疏数据结构来处理带状分布的点云。由于自由度对应着格点，我们因此可以将矩阵内的元素储存在
+格点上，比如$\Lambda$中的$\frac{1}{\sum_{r = 1}^n B_{ijk}(v_r) + B_{ijk}(q_r)}$（记为$\lambda_{ijk}$）储存在对应的格点$x_{ijk}$中，以同样方式来处理$\mathbf{B}$与$\mathbf{C}$中的元素。具体的算法细节我们列在\textbf{Algorithm \ref{alg:Sparse-LSIPIA}}中。
 
-图\ref{fig: MarchingCube vs after LSIPIA}(3)为使用LSIPIA拟合点云后的结果,可以发现拟合结果明显更光滑。图\ref{fig: LSIPIA_experience}展示了更多的实验结果，图中实验皆选自Yusuf等人~\cite{hamza2020implicit}在2019年耗时较长的实验，在原文中最短的兔子实验耗时为88.24秒，其他三个模型均在900秒以上，
-其实验平台处理器为Intel-core i7 @3.6GHZ,内存RAM为16GB。本文的实验平台为Intel-Core i5 @1.6GHZ，内存RAM为8GB。具体性能如表\ref{tab:LSIPIA perfomance}，可以发现在以下四个实验中即使使用了更精细的空间网格以及较为逊色的运行平台，相比于IPIA性能依然有三个数量级的提升，且性能瓶颈主要集中在网格尺寸上。
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.60]{./images/SparseDataStructure.png}
+    \caption[稀疏数据结构]{带状点云结构，绿色分段直线为Marching cube输出网格，黑色为采样点云，红色光滑曲线拟合结果，半透明红色为黑色点云周围的网格。}
+    \label{fig: SparseSparse-LSIPIA}
+\end{figure}
+
+式(3.7)给出的迭代格式收敛性的证明，详见LSPIA~\cite{lin2018convergence}。本迭代格式(下称为Sparse-LSIPIA)相较于IPIA格式最大的优势就是内存占用少，可高度并行，我们从\textbf{Algorithm \ref{alg:Sparse-LSIPIA}}来分析这一点。
+我们可以发现\textbf{Algorithm \ref{alg:Sparse-LSIPIA}}在第4行，第15行，第22行对应的循环可高度并行。同时需要的额外内存为储存在每个格点$\mathcal{G}$上的$C_{ijk}$，$\lambda_{ijk}$，$\Delta_{ijk}$。而这一点，我们将在下一节中
+说明里所需的额外内存可以借用物质点法中的数据结构完成，也就是说Sparse-LSIPIA的优势为可复用物质点法的数据结构，同时可以高度并行。
+
+图\ref{fig: MarchingCube vs after Sparse-LSIPIA}(3)为使用Sparse-LSIPIA拟合点云后的结果，可以发现拟合结果明显更光滑。图\ref{fig: Sparse-LSIPIA_experience}展示了更多的实验结果，图中实验皆选自Yusuf等人~\cite{hamza2020implicit}在2019年耗时较长的实验，在原文中最短的兔子实验耗时为88.24秒，其他三个模型均在900秒以上，
+其实验平台处理器为Intel-core i7 @3.6GHZ,内存RAM为16GB。本文的实验平台为Intel-Core i5 @1.6GHZ，内存RAM为8GB。具体性能如表\ref{tab:Sparse-LSIPIA perfomance}，可以发现在以下四个实验中即使使用了更精细的空间网格以及较为逊色的运行平台，相比于IPIA性能依然有三个数量级的提升，且性能瓶颈主要集中在网格尺寸上。
 \begin{table}[htb]
     \centering
-    \caption{LSIPIA的性能}
-    \label{tab:LSIPIA perfomance}
+    \caption{Sparse-LSIPIA的性能}
+    \label{tab:Sparse-LSIPIA perfomance}
       \begin{tabular}{llll}
         \toprule
         模型 & 数据点个数 & 背景网格尺寸& 耗时(单位:秒)\\
@@ -228,22 +248,22 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=0.60]{./images/LSIPIA_experience.png}
-    \caption[LSIPIA实验结果]{LSIPIA实验图，其中左上角模型为bunny模型实验，左上角第一张图为bunny点云输入，第二张为LSIPIA拟合结果。右上角，左下角，右下角分别为budahha模型，armadillo模型，fertility模型的实验结果}
-    \label{fig: LSIPIA_experience}
+    \caption[Sparse-LSIPIA实验结果]{Sparse-LSIPIA实验图，其中左上角模型为bunny模型实验，左上角第一张图为bunny点云输入，第二张为Sparse-LSIPIA拟合结果。右上角，左下角，右下角分别为budahha模型，armadillo模型，fertility模型的实验结果}
+    \label{fig: Sparse-LSIPIA_experience}
 \end{figure}
 
 
 \begin{algorithm}
-    \caption{LSIPIA}
-    \label{alg:LSIPIA}
+    \caption{Sparse-LSIPIA}
+    \label{alg:Sparse-LSIPIA}
     \begin{algorithmic}[1]
     \Require 点云位置$\mathcal{V}$,点云法向$\mathcal{N}$,背景网格格点集合$\mathcal{G}$,指定迭代次数$LoopTimes$
-    \Ensure 隐式曲面$f(x) = \sum_{ijk} C_{ijk}B_{ijk}(x)$,即输出参数值$C_{ijk}$
+    \Ensure 隐式曲面$f(x) = \sum_{ijk} C_{ijk}B_{ijk}(x)$，即输出参数值$C_{ijk}$
     \State 初始化$\forall ijk,C_{ijk} = 0$，初始化$\forall ijk,\lambda_{ijk} = 0$，初始化偏移量$\epsilon$
     \For{$r \in \#\mathcal{V}$}
         \State 预计算下标为$I = \{ijk : v_r \in supp(B_{ijk})\}$的张量积B-样条函数，储存为$B_{ijk}(v_r)$
         \For{$ijk \in I$}
-            \State $\lambda_{ijk} \leftarrow \lambda_{ijk} + B_{ijk}(v)$
+            \State $\lambda_{ijk} \leftarrow \lambda_{ijk} + B_{ijk}(v_r)$
         \EndFor
         \State $v_{\epsilon r} \leftarrow v_r + \epsilon n_r$
         \State 预计算下标为$I_{\epsilon} = \{ijk : v_{\epsilon r} \in supp(B_{ijk})\}$的张量积B-样条函数，储存为$B_{ijk}(v_{\epsilon r})$
@@ -278,7 +298,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \end{algorithm}
 
 \subsection{快速法向计算}
-在完成\textbf{Algorithm \ref{alg:LSIPIA}}之后，我们获得了一个二阶连续的隐式曲面。即
+在完成\textbf{Algorithm \ref{alg:Sparse-LSIPIA}}之后，我们获得了一个二阶连续的隐式曲面。即
 \begin{equation}
     f(x) = \sum_{ijk} C_{ijk}B_{ijk}(x)
 \end{equation}
@@ -305,7 +325,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 $\nabla B_{ijk}(x)$时每一个维度需要单独的计算。基于这些缺点，我们提出另一个近似法向的计算方法。这里我们使用移动加权最小二乘来逼近格点系数，我们将会看到在
 格点张量积B-样条基下，移动加权最小二乘的结果将有惊人的简单形式。
 
-我们寻求的近似目标函数为
+我们在空间中每一点$y$寻求一个在$y$周围的函数来拟合原始函数$f$，近似目标函数如下
 \begin{equation}
     f_y (x;c) = f(y) + c^T(x - y)    
 \end{equation}
@@ -330,7 +350,7 @@ $\nabla B_{ijk}(x)$时每一个维度需要单独的计算。基于这些缺点�
 \begin{equation}
     c = [\sum_{ijk}B_{ijk}(y)(x_{ijk} - y)(x_{ijk} - y)^T]^{-1} \cdot \sum_{ijk} B_{ijk}(y) (C_{ijk} - f(y)) (x_{ijk} - y)
 \end{equation}
-这里(3.12)式要成立的条件为$[\sum_{ijk}B_{ijk}(y)(x_{ijk} - y)(x_{ijk} - y)^T]$可逆，我们接下来证明该矩阵可逆。
+这里(3.14)式要成立的条件为$[\sum_{ijk}B_{ijk}(y)(x_{ijk} - y)(x_{ijk} - y)^T]$可逆，我们接下来证明该矩阵可逆。
 
 此处我们记$A = \sum_{ijk}B_{ijk}(y)(x_{ijk} - y)(x_{ijk} - y)^T$。首先我们计算$A$的非对角项即$A_{uv}, u\neq v\text{其中} u,v \in \{1,2,3\}$,这里再记$w \in \{1,2,3\}\text{且} w \notin \{u,v\} $。
 即
@@ -383,7 +403,7 @@ $$\sum_{i_w}B_{i_w}(y^w)(\sum_{i_u}B_{i_u}(y^u)x_{i_u i_v i_w}^u - y^uJ_u)(\sum_
     \end{split}
 \end{equation}
 }
-从式(3.15)的推导中可以看出，其导数恒为0，因此$A_{uu} = \sum_{i_u} B_{i_u}^n(y^u) (x_{i_1 i_2 i_3}^u - y^u)^2$恒为常数。事实上，在本文中，
+从(3.17)的推导中可以看出，其导数恒为0，因此$A_{uu} = \sum_{i_u} B_{i_u}^n(y^u) (x_{i_1 i_2 i_3}^u - y^u)^2$恒为常数。事实上，在本文中，
 B-样条阶数为2，可以计算得到$A_{uu} = \frac{h^2}{4}$，因此$A = \frac{h^2}{4}I$，代入到(3.12)式中我们有如下
 \begin{equation}
     \begin{split}
@@ -397,7 +417,8 @@ B-样条阶数为2，可以计算得到$A_{uu} = \frac{h^2}{4}$，因此$A = \fr
 \end{equation}
 继续观察(3.18)式，再利用B-样条的线性还原性，可以得到
 \begin{align}
-    f_y(x;c) = f(y) + \frac{4}{h^2}\sum_{ijk}B_{ijk}(y)C_{ijk}(x_{ijk} - y)^T(x - y)
+    f_y(x;c) &= f(y) + c^T(x - y)\\
+    c &= \frac{4}{h^2}\sum_{ijk}B_{ijk}(y)C_{ijk}(x_{ijk} - y)
 \end{align}
 故近似法向选取为$n = \frac{c}{\Vert c\Vert}$。可以发现，在计算$c$时，我们只要预计算$B_{i}(y^u), i,u \in \{1,2,3\}$，这表明该算法有着更低的内存消耗，在组合法向时，同时向量值$x_{ijk} - y$的计算远比$(\partial_i B_i(x^1) \cdot B_j(x^2)B_k(x^3), B_i(x^1)\partial_2 B_j(x^2)\cdot B_k(x^3), B_i(x^1)B_j(x^2)\partial_3B_k(x^3))$计算
 有更高的效率。
@@ -420,10 +441,10 @@ B-样条阶数为2，可以计算得到$A_{uu} = \frac{h^2}{4}$，因此$A = \fr
 \end{figure}
 \section{本章小结}
 本章给出了点云表面重建的方法，首先我们建立了点云的距离场，并使用合适的阙值$r$探查点云大致轮廓，
-并使用Marching cube算法来构造一阶连续曲面。为了得到更光滑的结果来获得更光滑的法向，
-本文使用LSIPIA方法处理，而实际上我们看到LSIPIA需要粒子上的法向作为输入，而实际上该法向仅仅是为了LSIPIA算法
+并使用Marching cube算法来构造$C^0$曲面。为了得到更光滑的结果来获得更光滑的法向，
+本文使用Sparse-LSIPIA方法处理，而实际上我们看到Sparse-LSIPIA需要粒子上的法向作为输入，而实际上该法向仅仅是为了Sparse-LSIPIA算法
 陷入平凡解，因此我们只需要估计出大致方向作为输入即可，其估计大致法向的办法
-将在下一节给出。在得到一个二阶光滑曲面之后，我们将基于此来计算法向，当然这个法向至少是一阶连续的，为了更少的计算代价，
+将在下一节给出。在得到一个$C^1$曲面之后，我们将基于此来计算法向，当然这个法向至少是一阶连续的，为了更少的计算代价，
 我们结合B-样条基函数的特性，使用移动最小二乘方法给出了一个相比于直接计算梯度更高效的估计办法。
 
 

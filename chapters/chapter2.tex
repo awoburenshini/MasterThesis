@@ -24,7 +24,7 @@ $n$，同时假定$\rho$ 和 $v$在 $\Omega$的一个开邻域内足够光滑。
 \begin{equation}
     \begin{split}
         \frac{d}{dt}\int_{\Omega} \rho(x,t)dx &= -\int_{\partial \Omega} \rho v \cdot n ds \\
-        \int_{\Omega} \frac{\partial}{\partial t} \rho (x,t)dx &= -\int_{\partial \Omega} div(\rho v)dx\nonumber\\
+        \int_{\Omega} \frac{\partial}{\partial t} \rho (x,t)dx &= -\int_{\Omega} div(\rho v)dx\nonumber\\
     \end{split}
 \end{equation}
 如果$\rho$在$\mathbb{R}^3$上都能达到足够光滑，那么由$\Omega$的任意性，可知
@@ -71,7 +71,8 @@ $n$，同时假定$\rho$ 和 $v$在 $\Omega$的一个开邻域内足够光滑。
 有$\Omega_t$上的实值函数，$f(\cdot,t) :\Omega_t \rightarrow \mathbb{R} $。
 
 \subsection{形变映射，形变梯度，速度}
-为了描述材料相对于参考构型发生的形变，我们引入形变映射 $$\phi:\Omega_0 \times [0,+\infty) \rightarrow \mathbb{R}^3$$,形变映射同时也给出了物体的运动轨迹。
+为了描述材料相对于参考构型发生的形变，我们引入形变映射 $$\phi:\Omega_0 \times [0,+\infty) \rightarrow \mathbb{R}^3$$
+形变映射同时也给出了物体的运动轨迹。
 为了方便，我们记$\phi_t (x) = \phi(x,t)$，实际上我们还假定$\{ \phi_t(x): t\in \mathbb{R}\}$构成了一个单参数变换群，并且关于$t$至少二阶光滑，关于$X$至少有连续的一阶导数。
 
 有了形变映射，我们可以引入对局部形变的刻画，即形变梯度$F(X,t):=\frac{\partial \phi_t(X)}{\partial X}$。实际上，形变梯度$F(X,t)$还可以视为$X$处切空间的映射，即
@@ -152,7 +153,7 @@ $$\int_{\hat{\Omega}_0} \rho(x,0)dx = \int_{\hat{\Omega}_t} \rho(x,t)dx = \int_{
         &=\int_{\hat{\Omega}_{t_0}}\rho(x,t_0)\frac{d}{dt}\Big |_{t = t_0} v(\phi_{t,t_0}(x),t)dx\nonumber
     \end{split}
 \end{equation}
-这里$\phi_{t,t_0} = \phi_t \cdot \phi_{t_0}^{-1}$，带入(2.6)中就有
+这里$\phi_{t,t_0} = \phi_t \cdot \phi_{t_0}^{-1}$，带入(2.7)中就有
 \begin{equation}
     \begin{split}
         \int_{\hat{\Omega}_{t_0}}\rho(x,t_0)\frac{d}{dt}\Big |_{t = t_0} v(\phi_{t,t_0}(x),t)dx = \int_{\hat{\Omega}_{t_0}} div(\sigma) dx + \int_{\hat{\Omega}_{t_0}} \rho g dx\nonumber
@@ -225,7 +226,7 @@ $$J\sigma = PF^{T}$$
 \begin{equation}
     S(\phi_t) = k\int_{\phi_t (\partial \Omega_0)} ds
 \end{equation}
-为了更好的计算其梯度，我们对(2.10)式做一些处理。此处引入一些微分流形的记号~\cite{lee2013smooth}，记$f^*$为$f$导出的拉回映射，$f_*$为推前映射，$ds,d\tilde{s}$分别为曲面$\partial \Omega_{t_0}, \partial \Omega_{t}$上的面积二形式，其为空间体积形式$dv$内乘法向的结果，
+为了更好的计算其梯度，我们对(2.11)式做一些处理。此处引入一些微分流形的记号~\cite{lee2013smooth}，记$f^*$为$f$导出的拉回映射，$f_*$为推前映射，$ds,d\tilde{s}$分别为曲面$\partial \Omega_{t_0}, \partial \Omega_{t}$上的面积二形式，其为空间体积形式$dv$内乘法向的结果，
 即$ds(X,Y) = dv(n,X,Y)$,我们记$ds = dv\odot n$，$ \tilde{p} = \phi_{t_0,t}(p)$,则对任意的$t \in[0, t_0),\tilde{X},\tilde{Y}\in T_{\tilde{p}}\Omega_t$有如下
 \begin{equation}
     \begin{split}
