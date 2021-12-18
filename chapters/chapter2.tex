@@ -19,7 +19,7 @@ $v : \mathbb{R}^3 \times \mathbb{R} \rightarrow \mathbb{R}^3$ 为空间中随时
 \end{figure}
 
 现在考虑一个闭区域$\Omega$，$\Omega$的边界记为$\partial \Omega$，边界上的外法向记为
-$n$，同时假定$\rho$ 和 $v$在 $\Omega$的一个开邻域内足够光滑。根据质量守恒，我们有$\Omega$上质量的
+$n$，同时假定$\rho$ 和 $v$在 $\Omega$的一个开邻域内足够光滑。根据质量守恒，容易得到$\Omega$上质量的
 变化率为$\partial \Omega$上质量的流出率和流入率之和。即
 \begin{equation}
     \begin{split}
@@ -39,7 +39,7 @@ $n$，同时假定$\rho$ 和 $v$在 $\Omega$的一个开邻域内足够光滑。
 \begin{equation}
     \frac{d}{dt} \Big |_{t = t_0} \int_{\Omega} \rho v dx = -\int_{\partial \Omega} \rho v (v\cdot n) ds + \int_{\partial \Omega} \sigma \cdot n ds + \int_{\Omega} \rho g dx
 \end{equation}
-在(2.2)式中，$g$为重力加速度，$\sigma$为Cauthy应力~\cite{gonzalez2008first}。特别的，$\sigma$是一个三阶对称矩阵，其对称性来源于角动量守恒~\cite{marsden1994mathematical}，我们将在2.4节中从另一个角度说明其对称性。
+在(2.2)式中，$g$为重力加速度，$\sigma$为Cauthy应力~\cite{gonzalez2008first}。特别地，$\sigma$是一个三阶对称矩阵，其对称性来源于角动量守恒~\cite{marsden1994mathematical}，我们将在2.4节中从另一个角度说明其对称性。
 
 由于(2.2)式中$\Omega$选择的任意性，我们有
 \begin{equation}
@@ -61,7 +61,7 @@ $n$，同时假定$\rho$ 和 $v$在 $\Omega$的一个开邻域内足够光滑。
 
 
 \section{拉格朗日视角下的动力学}
-在上一节中，我们根据质量守恒和动量守恒得到了两个方程（方程(2.1)与方程(2.4)）,非常重要的一点是，上述方程并没有使用任何
+在上一节中，本文根据质量守恒和动量守恒得到了两个方程（方程(2.1)与方程(2.4)）,非常重要的一点是，上述方程并没有使用任何
 有关自然状态--材料在不施加外力的静止状态--的信息。在之后的章节中，我们将假定，$t=0$是处于自然状态,并且只考虑$t \ge 0$ 的情况。
 
 假定在自然状态下（$t = 0$），材料占据的空间为$\Omega_0 \subset \mathbb{R}^3$，此时也称$\Omega_0$为参考构型。对于任意给定的$t\in (0,+\infty)$,
@@ -139,7 +139,7 @@ $$\int_{\hat{\Omega}_0} \rho(x,0)dx = \int_{\hat{\Omega}_t} \rho(x,t)dx = \int_{
 此处$DIV$是$\Omega_0$上的散度算子，为了与$\Omega_t$上进行区分记为大写。其中$P$是应力的另一种表述形式，称为First Piola–Kirchhoff应力~\cite{gonzalez2008first}，其满足$\int_{\partial \hat{\Omega}_{0}} P \cdot N dS = \int_{\partial \hat{\Omega}_{t}} \sigma \cdot n ds$
 我们将在下一节本构关系中更详细的给出$P$的计算方式以及与$\sigma$的关系。 
 
-下面我们再次从拉格朗日视角推导欧拉视角下的动量守恒，来证明两者的等价性。
+当然拉格朗日视角与欧拉视角下的动量守恒实际是等价的，我们接下来根据~\cite{gonzalez2008first}来说明其等价性，并且整理出一个更简洁的表达形式。
 \begin{equation}
     \begin{split}
         \frac{d}{dt}\Big |_{t = t_0}\int_{\hat{\Omega}_0}R(X,0)V(x,t)dX &= \frac{d}{dt}\Big |_{t = t_0} \int_{\hat{\Omega}_0}R(X,t)v(\phi_t(X),t)J(X,t)dX\\
@@ -181,7 +181,7 @@ $$\frac{\partial}{\partial t}(\rho v) + div(\rho v^{T}v) = div(\sigma) + \rho g$
 带入即知，(2.4)式是(2.8)式的展开。
 
 \section{本构关系}
-在前两节中，我们在动量守恒方程中引入了应力项，其决定了速度如何随着时间变化。本节我们将给出如何通过形变来给出
+在前两节中，我们在动量守恒方程中引入了应力项，其决定了速度如何随着时间变化。本节我们将通过形变来给出
 应变张量，其中应变张量和形变的函数关系被称为本构关系。事实上，本构关系直接决定了我们模拟的物体会表现出何种特质。
 
 流体被认为是一种不可压缩的物质，用数学的语言就是说其形变梯度$F$满足$det(F)\equiv 1$，然而在实践中，为了更好的配合物质点法的使用，
@@ -280,16 +280,16 @@ $$(\phi_{t_0,t}^*ds) = det(F(x;t_0,t)) \Vert F^{-T}(x;t_0,t)\tilde{n}\Vert d\til
     &R(X,0)\frac{\partial}{\partial t} V(X,t) = DIV(P) + Rg &\text{拉格朗日视角下的质量守恒方程}
 \end{align*}
 
-以上四个方程分别从两种视角分别等价的刻画了质量守恒和动量守恒，这两种视角也会在物质点法离散化的过程中体现出来。其次，我们还给出了
-形变梯度与速度的关系
+以上四个方程分别从两种视角分别等价的刻画了质量守恒和动量守恒，这两种视角也会在物质点法离散化的过程中体现出来。其次，通过整理得到
+形变梯度更新方程~\cite{jiang2016material}
 \begin{align*}
     \dot{F} = \nabla v \cdot F
 \end{align*}
 该方程将会在物质点法如何获得下一时刻的形变梯度中起到关键作用。最后，
 我们给出了弱可压缩能量$W(F)=\lambda (J-1)^2$来刻画流体的特性，该能量也给出了First Piola–Kirchhoff应力和Cauthy应力的计算方式。
-其次我们给出了表面能的计算方法
+其次根据~\cite{popinet2018numerical}\cite{hyde2020implicit}得到表面能的另一个等价表达形式
 $$S(\phi_{t_0}) = k \int_{\partial \Omega_{t_1}} det(F(x;t_0,t_1)) \Vert F^{-T}(x;t_0,t_1)\tilde{n}\Vert d\tilde{s}$$
-该计算形式下，积分域不随着$\phi_{t_0}$变化而变化，为我们离散计算以及变分都带来了便利，而表面张力将由表面能变分获得，这一步我们将在离散化的过程中来计算。
+该计算形式下，积分域不随着$\phi_{t_0}$变化而变化，为我们离散计算以及变分都带来了便利，而表面张力将由表面能变分获得，这一步我们将在离散化的过程(章节\ref{chap4})中来计算。
 
 
 
