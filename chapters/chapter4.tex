@@ -266,7 +266,7 @@ $v$所相关的表面点个数$C_v$，同时将内部点的质量均匀的分布
 \end{align}
 因此网格上的速度场更新为
 \begin{align}
-    \hat{v}_{\mathbf{j}}^{n+1} = \frac{1}{m_\mathbf{j}^n}(m_{\mathbf{j}}^nv_{\mathbf{j}}^n + \Delta t f^{liquid}_{\mathbf{j}} + \Delta t f^{surface}_{\mathbf{j}} +\Delta t m_\mathbb{j}^n g)
+    \hat{v}_{\mathbf{j}}^{n+1} = \frac{1}{m_\mathbf{j}^n}(m_{\mathbf{j}}^nv_{\mathbf{j}}^n + \Delta t f^{liquid}_{\mathbf{j}} + \Delta t f^{surface}_{\mathbf{j}} +\Delta t m_\mathbf{j}^n g)
 \end{align}
 此处$g$为重力加速度。网格上力的计算本文称为格点操作(Grid Operation,简称GOP)。
 \section{计算流程}
