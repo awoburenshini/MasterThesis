@@ -31,7 +31,7 @@ Marching Cube~\cite{heiden1993fast}算法重构表面网格，然而该网格的
 
 \section{水平集网格提取}
 Marching cube通常用于三维标量场的水平集的可视化，本文使用Marching cube算法来获取水平集的三角网格，在本文中我们的水平集为
-$$\mathcal{S}(\mathcal{V}) = \{x\in \mathbb{R}^3: d(x,\mathcal{V}) = r\}$$。
+$$\mathcal{S}(\mathcal{V}) = \{x\in \mathbb{R}^3: d(x,\mathcal{V}) = r\}$$
 
 
 \begin{figure}[htbp]
@@ -335,7 +335,7 @@ $\nabla B_{ijk}(x)$时每一个维度需要单独的计算。基于这些缺点�
 格点张量积B-样条基下，移动线性最小二乘的拟合法向$n$将有如下惊人的简单形式
 \begin{equation}
     \begin{split}
-        c &= \frac{4}{h^2}\sum_{ijk}B_{ijk}(y)C_{ijk}(x_{ijk} - y)\nonumber\\
+        c &= \frac{4}{h^2}\sum_{ijk}B_{ijk}(y)C_{ijk}(x_{ijk} - x)\nonumber\\
         n &= \frac{c}{\Vert c \Vert}          
     \end{split}
 \end{equation}
