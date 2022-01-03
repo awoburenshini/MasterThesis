@@ -2,11 +2,11 @@
 \section{引言}
 连续介质力学是本文构建控制方程的理论基础。
 本文基于连续介质力学给出流体以及流体表面的数学描述，并从两个
-视角来描述物体运动，以此构建动力学方程。为了构建完整的控制方程，还需要给出本构模型，
+视角来描述物体运动，以此构建动力学方程~\cite{gonzalez2008first}。为了构建完整的控制方程，还需要给出本构模型，
 即形变与应力的关系，这里本文使用的为流体的弱可压缩模型以及表面张力模型。
 
 \section{欧拉视角下的动力学}
-欧拉视角，即物理量的定义域为$\mathbb{R}^3$,对物体的刻画由空间中的密度场给出。与拉格朗日视角的区别我们将在2.3小节中给出。
+欧拉视角~\cite{popinet2018numerical}，即物理量的定义域为$\mathbb{R}^3$,对物体的刻画由空间中的密度场给出。与拉格朗日视角的区别我们将在2.3小节中给出。
 
 \subsection{欧拉视角下的质量守恒定律}
 记$\rho : \mathbb{R}^3 \times \mathbb{R} \rightarrow \mathbb{R}$ 为空间中随时间变化的密度场，
@@ -170,7 +170,7 @@ $$\rho(x,t_0)\frac{d}{dt}\Big |_{t = t_0} v(\phi_{t,t_0}(x),t) = div(\sigma) + \
         \rho \frac{Dv}{Dt} = div(\sigma) + \rho g
     \end{split}
 \end{equation}
-该方程实际与(2.4)式等价，由于其更简洁的表述形式，我们之后将称(2.9)式为欧拉视角下的动量守恒。
+该方程实际与(2.4)式等价，由于其更简洁的表述形式，(2.9)式被称为欧拉视角下的动量守恒。
 $$\frac{\partial}{\partial t}(\rho v) + div(\rho v^{T}v) = div(\sigma) + \rho g$$
 可考察方程的左端项
 \begin{align*}
@@ -272,7 +272,7 @@ $$(\phi_{t_0,t}^*ds) = det(F(x;t_0,t)) \Vert F^{-T}(x;t_0,t)\tilde{n}\Vert d\til
 
 
 \section{本章小结}
-本章基于连续介质力学得到了一系列的控制方程
+本章基于连续介质力学介绍了一系列的控制方程
 \begin{align*}
     &\frac{\partial}{\partial t}\rho (x,t) + div(\rho v) = 0 & \text{欧拉视角下的质量守恒方程} \\
     &R(X,t)J(X,t) = R(X,0) & \text{拉格朗日视角下的质量守恒方程} \\
@@ -286,7 +286,7 @@ $$(\phi_{t_0,t}^*ds) = det(F(x;t_0,t)) \Vert F^{-T}(x;t_0,t)\tilde{n}\Vert d\til
     \dot{F} = \nabla v \cdot F
 \end{align*}
 该方程将会在物质点法如何获得下一时刻的形变梯度中起到关键作用。最后，
-我们给出了弱可压缩能量$W(F)=\lambda (J-1)^2$来刻画流体的特性，该能量也给出了First Piola–Kirchhoff应力和Cauthy应力的计算方式。
+我们选取了弱可压缩能量$W(F)=\lambda (J-1)^2$来刻画流体的特性，该能量也定义了有关流体的First Piola–Kirchhoff应力和Cauthy应力的计算方式。
 其次根据~\cite{popinet2018numerical}\cite{hyde2020implicit}得到表面能的另一个等价表达形式
 $$S(\phi_{t_0}) = k \int_{\partial \Omega_{t_1}} det(F(x;t_0,t_1)) \Vert F^{-T}(x;t_0,t_1)\tilde{n}\Vert d\tilde{s}$$
 该计算形式下，积分域不随着$\phi_{t_0}$变化而变化，为我们离散计算以及变分都带来了便利，而表面张力将由表面能变分获得，这一步我们将在离散化的过程(章节\ref{chap4})中来计算。
