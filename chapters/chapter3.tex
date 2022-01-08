@@ -2,9 +2,9 @@
 \section{引言}
 为了计算表面张力，我们需要一种能够从点云中定义表面以及连续表面法向的方法。本文首先
 使用粒子水平集方法~\cite{boyd2012multiflip}获得一个粗糙的$C^0$连续隐式曲面，并使用
-Marching Cube~\cite{heiden1993fast}算法重构表面网格，然而该网格的质量只能做到$C^0$连续，
+Marching cubes~\cite{heiden1993fast}算法重构表面网格，然而该网格的质量只能做到$C^0$连续，
 计算得到的法向在面片之间并不连续，其虽然给出了流体的大致轮廓，但难以应用于表面张力计算。
-本文在Marching Cube获得的网格上进行泊松圆盘采样，然后结合已经存在的IPIA算法~\cite{hamza2020implicit}，
+本文在Marching cubes获得的网格上进行泊松圆盘采样，然后结合已经存在的IPIA算法~\cite{hamza2020implicit}，
 提出一种新的快速重建算法以此获得一个$C^1$的隐式曲面。如此得到的隐式曲面将成为我们计算流体表面张力的基础。大致流程如图\ref{fig:surface reconstruction pipeline}所示。
 
 \begin{figure}[htbp]
@@ -30,7 +30,7 @@ Marching Cube~\cite{heiden1993fast}算法重构表面网格，然而该网格的
 一个粗糙的网格。
 
 \section{水平集网格提取}
-Marching cube通常用于三维标量场的水平集的可视化，本文使用Marching cube算法来获取水平集的三角网格，在本文中我们的水平集为
+Marching cubes通常用于三维标量场的水平集的可视化，本文使用Marching cubes算法来获取水平集的三角网格，在本文中我们的水平集为
 $$\mathcal{S}(\mathcal{V}) = \{x\in \mathbb{R}^3: d(x,\mathcal{V}) = r\}$$
 
 
@@ -38,7 +38,7 @@ $$\mathcal{S}(\mathcal{V}) = \{x\in \mathbb{R}^3: d(x,\mathcal{V}) = r\}$$
     \centering
     \includegraphics[scale=0.3]{./images/image7.png}
     \caption{二维点云轮廓提取图示}
-    \label{fig:2D marching cube}
+    \label{fig:2D marching cubes}
 \end{figure}
 \begin{figure}[htbp]
     \centering
@@ -47,21 +47,21 @@ $$\mathcal{S}(\mathcal{V}) = \{x\in \mathbb{R}^3: d(x,\mathcal{V}) = r\}$$
     \label{fig:grid and sphere}
 \end{figure}
 
-本小节我们的目标只是提取出一个大致的点云的表面轮廓，如图\ref{fig:2D marching cube}所示。我们首先将空间离散化成一个个均匀的立方体，我们称之为背景网格，并对每一个正方体格点放置一个标志符，默认为0，此处记立方体宽度为$h$，为了保证球能够覆盖到一个足够大的
+本小节我们的目标只是提取出一个大致的点云的表面轮廓，如图\ref{fig:2D marching cubes}所示。我们首先将空间离散化成一个个均匀的立方体，我们称之为背景网格，并对每一个正方体格点放置一个标志符，默认为0，此处记立方体宽度为$h$，为了保证球能够覆盖到一个足够大的
 面积，此处我们选择$r = \sqrt{3}h$，二维情况为$r = \sqrt{2}h$，具体如图\ref{fig:grid and sphere}所示。本文为了节省内存，
 具体实现使用了八叉树数据结构。之后对每一个粒子操作，将粒子周围的格点做标记，如果格点距离该粒子半径不超过
 $r$，则将格点标记为1，如此下来，所有的正方体格点都被标记为两种状态。之后我们对正方体按格点状态进行分类，由于每个格点有
-两种状态，每个正方体有8个格点，如此一来便有$2^8 = 256$种状态，在合并旋转和对称的情况后，可以简化成15种，可以分类成如图\ref{fig:marching cube table}所示。
+两种状态，每个正方体有8个格点，如此一来便有$2^8 = 256$种状态，在合并旋转和对称的情况后，可以简化成15种，可以分类成如图\ref{fig:marching cubes table}所示。
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=0.6]{./images/image6.png}
-    \caption{Marching cube列表}
-    \label{fig:marching cube table}
+    \caption{Marching cubes列表}
+    \label{fig:marching cubes table}
 \end{figure}
-之后我们再将网格顶点位置调整到合适的位置，并建立三角网格数据结构。具体的算法描述见\textbf{Algorithm \ref{alg:marching cube}}。
+之后我们再将网格顶点位置调整到合适的位置，并建立三角网格数据结构。具体的算法描述见\textbf{Algorithm \ref{alg:marching cubes}}。
 \begin{algorithm}
-    \caption{Marching cube}
-    \label{alg:marching cube}
+    \caption{Marching cubes}
+    \label{alg:marching cubes}
     \begin{algorithmic}[1]
     \Require 点云集合$\mathcal{V}$，立方体宽度$h$
     \Ensure 三角网格位置集合$V$，面片集合$F$
@@ -83,7 +83,7 @@ $r$，则将格点标记为1，如此下来，所有的正方体格点都被标�
       \State 在$p_{stack}$中选取离$g_0$最近的点，并赋值给$P(e)$，同时将$P(e)$压入$V$中
     \EndFor
     \For{$c \in \mathcal{C}$}
-        \State 匹配$c$所对应的Marching cube 列表中的状态
+        \State 匹配$c$所对应的Marching cubes 列表中的状态
         \State 构造相应的三角面表$f_s$，顶点选为对应$P(e)$在$V$中得索引
         \State 将$f_s$其压入$F$中
     \EndFor
@@ -98,7 +98,7 @@ $r$，则将格点标记为1，如此下来，所有的正方体格点都被标�
 \end{figure}
 
 
-从实验结果的图\ref{fig: MarchingCube vs after Sparse-LSIPIA}(2)中可以发现，Marching cube算法确实提取出了一个点云的边界，但是轮廓只能做到$C^0$连续，法向明显不连续，同时其三角网格质量无法
+从实验结果的图\ref{fig: MarchingCube vs after Sparse-LSIPIA}(2)中可以发现，Marching cubes算法确实提取出了一个点云的边界，但是轮廓只能做到$C^0$连续，法向明显不连续，同时其三角网格质量无法
 无法保证，甚至可以明显看出存在一些尖锐地方，网格质量极差，上述的问题给我们计算表面张力带来了很大的阻碍。
 
 \section{隐式曲面拟合}
@@ -229,7 +229,7 @@ $$\mathbf{B}^T \mathbf{B} \mathbf{C} = 0$$
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=0.60]{./images/SparseDataStructure.png}
-    \caption[稀疏数据结构]{带状点云结构，绿色分段直线为Marching cube输出网格，黑色为采样点云，红色光滑曲线拟合结果，半透明红色为黑色点云周围的网格。}
+    \caption[稀疏数据结构]{带状点云结构，绿色分段直线为Marching cubes输出网格，黑色为采样点云，红色光滑曲线拟合结果，半透明红色为黑色点云周围的网格。}
     \label{fig: SparseSparse-LSIPIA}
 \end{figure}
 
@@ -457,7 +457,7 @@ B-样条阶数为2，可以计算得到$A_{uu} = \frac{h^2}{4}$，因此$A = \fr
 \end{figure}
 \section{本章小结}
 本章给出了点云表面重建的方法，首先我们建立了点云的距离场，并使用合适的阙值$r$探查点云大致轮廓，
-并使用Marching cube算法来构造$C^0$曲面。为了得到更光滑的结果来获得更光滑的法向，
+并使用Marching cubes算法来构造$C^0$曲面。为了得到更光滑的结果来获得更光滑的法向，
 本文使用Sparse-LSIPIA方法处理，而实际上我们看到Sparse-LSIPIA需要粒子上的法向作为输入，而实际上该法向仅仅是为了Sparse-LSIPIA算法
 陷入平凡解，因此我们只需要估计出大致方向作为输入即可，其估计大致法向的办法
 将在下一节给出。在得到一个$C^1$曲面之后，我们将基于此来计算法向，当然这个法向至少是$C^0$的，为了更少的计算代价，
