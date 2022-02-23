@@ -315,12 +315,24 @@ He等人每帧平均耗时为1秒。具体实验场景见图\ref{fig: Cube compa
 然后凝聚在一起，慢慢聚成一个球体，之后流体速度场变为与圆环面垂直的方向，并在与地面发生碰撞后分裂为两滴液滴。具体实验场景见图\ref{fig: torus split experience}。
 该实验结果说明本文的方法能够成功的处理拓扑变化，并且不需要额外的网格处理过程。
 
+\subsection{兔子实验}
+该实验表面张力系数$k = 2.0$，兔子模型由130000个粒子表示。该实验耗用内存约为12GB，每个时间步长耗时平均为0.7644s，每一帧由50个时间步长组成，
+平均一帧耗时为38秒。液滴初速度为0，初始高度为0.75，初始形状为兔子，在重力作用下自由下落。可以发现，在表面张力影响下，兔子逐渐趋向于球体，
+与光滑地面碰撞后反弹，最后形状在类似球体形状之下振荡。具体实验场景见图\ref{fig: bunny drop experience}。
+该实验结果说明，较复杂的初始单连通模型在本文方法下，最后也能够慢慢变成球体。
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[scale=0.56]{./images/DropNotSplashEXP.png}
     \caption[液滴下落实验]{液滴下落实验}
     \label{fig: sphere Drop experience}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[scale=0.56]{./images/bunnyDrop.png}
+    \caption[兔子下落实验]{兔子下落实验}
+    \label{fig: bunny drop experience}
 \end{figure}
 
 \begin{figure}[htbp]
