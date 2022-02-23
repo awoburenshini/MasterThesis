@@ -5,14 +5,14 @@
 
 \vspace{1em}
 
-The material point method (MPM) is a numerical method for solving partial differential equations. In recent years, MPM has made tremendous progress in physical simulation. 
+Material point method (MPM) is a numerical method for solving partial differential equations. In recent years, MPM has made tremendous progress in physical simulation. 
 From film industry, geophysics, to material science, MPM has been bringing huge 
 innovations for these industries, showing its power among simulation techniques. Thanks to the universality of the MPM,
-various physical phenomena can be coupled in a system, realizing some that have never been successfully simulated in previous techniques.
+various physical phenomena can be coupled in a system. So, we can realize some scenario that have never been successfully simulated.
 However, in fluid simulation, more artifacts appeared when we compared to other fluid simulation methods, especially some unwanted fluid visious
-and unreal surface tension effects. Due to the continuum represented by some particles in MPM，it is difficult to define a feasible surface of particle clouds,
+and unreal surface tension effects. Due to that the continuum often be represented by particles in MPM，it is difficult to define a feasible surface of particle clouds,
 which brings great difficulties to the simulation of surface tension. At the same time, because of the material point method itself has strict requirements on the
-timestep, in order to obtain a       stable coupling with surface tension, damping terms are often added to the equations and implict schemes are used, which intensifies the numerical
+timestep, in order to obtain a table coupling with surface tension, damping terms are often added to the equations and implict schemes are used, which intensifies the numerical
 viscosity of MPM fluid and makes simulation results unsatisfactory.
 
 This paper studies a method of simulating the surface tension of fluids under the framework of the material point method. The main idea is to use point clouds to reconstruct the
